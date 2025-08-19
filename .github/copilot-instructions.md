@@ -8,7 +8,7 @@ This is a comprehensive Express.js API template project with the following struc
 - **Language**: JavaScript (Node.js)
 - **Database**: Sequelize ORM (supports SQLite, MySQL, PostgreSQL)
 - **Authentication**: JWT-based authentication
-- **Testing**: Jest with Supertest
+- **Testing**: Jest
 - **Documentation**: Swagger/OpenAPI 3.0
 - **Architecture**: RESTful API with clean separation of concerns
 
@@ -76,7 +76,7 @@ src/
 ## Testing
 
 - Write unit tests for all endpoints
-- Use Jest and Supertest
+- Use Jest
 - Test both success and error scenarios
 - Maintain good test coverage
 

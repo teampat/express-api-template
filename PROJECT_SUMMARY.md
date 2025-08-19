@@ -14,7 +14,7 @@ A comprehensive Express.js API template with all the features you requested:
 - ✅ **Database Migrations** - Full migration and seeding support
 - ✅ **Auto-generated Documentation** - Swagger/OpenAPI 3.0 documentation
 - ✅ **Input Validation** - Request validation with Joi schemas
-- ✅ **Unit Testing** - Comprehensive test suite with Jest and Supertest (25 tests passing)
+- ✅ **Unit Testing** - Comprehensive test suite with Jest
 - ✅ **Security Features** - Helmet, CORS, Rate limiting, JWT protection
 - ✅ **Error Handling** - Centralized error handling with proper logging
 - ✅ **Clean Architecture** - Well-organized code with separation of concerns
@@ -80,7 +80,7 @@ express-api-template/
 - **Database ORM**: Sequelize (SQLite/MySQL/PostgreSQL)
 - **Authentication**: JWT (JSON Web Tokens)
 - **Validation**: Joi
-- **Testing**: Jest + Supertest
+- **Testing**: Jest
 - **Documentation**: Swagger/OpenAPI 3.0
 - **File Upload**: Multer (with optional Sharp for image processing)
 - **Email**: Nodemailer with Handlebars templates

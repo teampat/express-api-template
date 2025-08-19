@@ -13,7 +13,7 @@ A comprehensive Express.js API template with modern features including authentic
 - **Database Migrations** - Full migration and seeding support
 - **Auto-generated Documentation** - Swagger/OpenAPI 3.0 documentation
 - **Input Validation** - Request validation with Joi
-- **Unit Testing** - Comprehensive test suite with Jest and Supertest
+- **Unit Testing** - Comprehensive test suite with Jest
 - **Security** - Security best practices with Helmet, CORS, Rate limiting
 - **Error Handling** - Centralized error handling
 - **Code Organization** - Clean architecture with separation of concerns
