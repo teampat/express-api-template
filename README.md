@@ -168,7 +168,7 @@ This project is fully compatible with Bun! Here are some Bun-specific benefits a
 ### Why Bun?
 - **🚀 Performance**: Up to 4x faster than Node.js for many operations
 - **📦 Built-in package manager**: No need for separate package managers
-- **🔧 Built-in test runner**: `bun test` works out of the box
+- **🔧 Compatible test runner**: `bun run test` runs Jest tests efficiently
 - **📁 Built-in bundler**: Fast bundling capabilities
 - **🔄 Node.js compatibility**: Drop-in replacement for most Node.js apps
 
@@ -183,8 +183,8 @@ bun run dev
 # Start production server
 bun run start
 
-# Run tests
-bun test
+# Run tests (using Jest through Bun)
+bun run test
 
 # Run specific scripts
 bun run migrate
@@ -193,6 +193,13 @@ bun run seed
 
 ### Note on Database Drivers
 All database drivers (SQLite, MySQL/MariaDB, PostgreSQL) work seamlessly with Bun thanks to its Node.js compatibility layer.
+
+### Note on Testing
+This project uses Jest for testing, which runs efficiently through Bun using `bun run test`. While Bun has its own built-in test runner, we use Jest for:
+- **Compatibility**: Extensive mocking capabilities with existing test suite
+- **Ecosystem**: Rich Jest ecosystem and plugins
+- **Migration**: Easy migration path for existing Node.js projects
+- **Features**: Comprehensive testing features like coverage reports
 
 ## 📚 API Documentation
 
