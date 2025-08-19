@@ -43,9 +43,12 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Swagger documentation
-const specs = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+// Swagger documentation (only in development)
+if (process.env.NODE_ENV !== 'production') {
+  const specs = swaggerJsdoc(swaggerOptions);
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+  logger.info(`API Documentation: http://localhost:${PORT}/api-docs`);
+}
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -93,7 +96,9 @@ async function startServer() {
     app.listen(PORT, () => {
       logger.info(`Server running on port ${PORT}`);
       logger.info(`Environment: ${process.env.NODE_ENV}`);
-      logger.info(`API Documentation: http://localhost:${PORT}/api-docs`);
+      if (process.env.NODE_ENV !== 'production') {
+        logger.info(`API Documentation: http://localhost:${PORT}/api-docs`);
+      }
     });
   } catch (error) {
     logger.error('Unable to start server:', error);
