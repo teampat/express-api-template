@@ -85,6 +85,7 @@ No additional configuration needed. The database file will be created automatica
 ### MySQL
 
 Update your `.env` file:
+
 ```env
 DB_DIALECT=mysql
 DB_HOST=localhost
@@ -97,6 +98,7 @@ DB_PASSWORD=your_password
 ### PostgreSQL
 
 Update your `.env` file:
+
 ```env
 DB_DIALECT=postgres
 DB_HOST=localhost
@@ -115,30 +117,30 @@ The API uses JWT-based authentication. Default users (created by seeder):
 
 ### Authentication Endpoints:
 
-- \`POST /api/auth/register\` - Register new user
-- \`POST /api/auth/login\` - Login user
-- \`GET /api/auth/me\` - Get current user profile
-- \`PUT /api/auth/change-password\` - Change password
-- \`POST /api/auth/forgot-password\` - Request password reset
-- \`POST /api/auth/reset-password\` - Reset password with token
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/me` - Get current user profile
+- `PUT /api/auth/change-password` - Change password
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/reset-password` - Reset password with token
 
 ## 👥 User Management
 
 ### User Endpoints:
 
-- \`GET /api/users\` - Get all users (Admin only)
-- \`GET /api/users/:id\` - Get user by ID
-- \`PUT /api/users/:id\` - Update user
-- \`DELETE /api/users/:id\` - Delete user (Admin only)
-- \`PATCH /api/users/:id/toggle-status\` - Toggle user status (Admin only)
+- `GET /api/users` - Get all users (Admin only)
+- `GET /api/users/:id` - Get user by ID
+- `PUT /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user (Admin only)
+- `PATCH /api/users/:id/toggle-status` - Toggle user status (Admin only)
 
 ## 📁 File Upload
 
 ### Upload Endpoints:
 
-- \`POST /api/upload/single\` - Upload single file
-- \`POST /api/upload/multiple\` - Upload multiple files
-- \`DELETE /api/upload/:filename\` - Delete uploaded file
+- `POST /api/upload/single` - Upload single file
+- `POST /api/upload/multiple` - Upload multiple files
+- `DELETE /api/upload/:filename` - Delete uploaded file
 
 ### Features:
 
@@ -150,58 +152,67 @@ The API uses JWT-based authentication. Default users (created by seeder):
 ## 🧪 Testing
 
 Run tests:
-\`\`\`bash
+
+```bash
 npm test
-\`\`\`
+```
 
 Run tests in watch mode:
-\`\`\`bash
+
+```bash
 npm run test:watch
-\`\`\`
+```
 
 Generate test coverage:
-\`\`\`bash
+
+```bash
 npm run test:coverage
-\`\`\`
+```
 
 ## 📊 Database Migrations
 
 Create a new migration:
-\`\`\`bash
+
+```bash
 npx sequelize-cli migration:generate --name migration-name
-\`\`\`
+```
 
 Run migrations:
-\`\`\`bash
+
+```bash
 npm run migrate
-\`\`\`
+```
 
 Undo last migration:
-\`\`\`bash
+
+```bash
 npm run migrate:undo
-\`\`\`
+```
 
 Create a new seeder:
-\`\`\`bash
+
+```bash
 npx sequelize-cli seed:generate --name seeder-name
-\`\`\`
+```
 
 Run seeders:
-\`\`\`bash
+
+```bash
 npm run seed
-\`\`\`
+```
 
 ## 📧 Email Service
 
-Configure SMTP settings in your \`.env\` file:
-\`\`\`env
+Configure SMTP settings in your `.env` file:
+
+```env
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
-\`\`\`
+```
 
-Email templates are located in \`src/templates/\`.
+Email templates are located in `src/templates/`.
 
 ## 🔒 Security Features
 
@@ -215,10 +226,10 @@ Email templates are located in \`src/templates/\`.
 
 ## 📝 Logging
 
-Logs are stored in the \`logs/\` directory:
+Logs are stored in the `logs/` directory:
 
-- \`error.log\` - Error logs only
-- \`combined.log\` - All logs
+- `error.log` - Error logs only
+- `combined.log` - All logs
 
 Log levels: error, warn, info, debug
 
@@ -226,7 +237,7 @@ Log levels: error, warn, info, debug
 
 Key environment variables:
 
-\`\`\`env
+```env
 NODE_ENV=development
 PORT=3000
 DB_DIALECT=sqlite
@@ -234,41 +245,41 @@ JWT_SECRET=your-jwt-secret
 SMTP_HOST=smtp.gmail.com
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-password
-\`\`\`
+```
 
 ## 📁 Project Structure
 
-\`\`\`
+```
 src/
-├── config/ # Configuration files
-│ ├── database.js
-│ ├── logger.js
-│ └── swagger.js
-├── middleware/ # Express middleware
-│ ├── auth.js
-│ ├── errorHandler.js
-│ ├── rateLimiter.js
-│ └── validate.js
-├── models/ # Sequelize models
-│ ├── User.js
-│ └── index.js
-├── routes/ # Express routes
-│ ├── auth.js
-│ ├── users.js
-│ └── upload.js
-├── services/ # Business logic services
-│ └── emailService.js
-├── validators/ # Joi validation schemas
-│ └── authValidator.js
-├── migrations/ # Database migrations
-├── seeders/ # Database seeders
-├── templates/ # Email templates
-└── server.js # Application entry point
-\`\`\`
+├── config/             # Configuration files
+│   ├── database.js     # Database configuration
+│   ├── logger.js       # Winston logger setup
+│   └── swagger.js      # Swagger/OpenAPI configuration
+├── middleware/         # Express middleware
+│   ├── auth.js         # JWT authentication middleware
+│   ├── errorHandler.js # Global error handling
+│   ├── rateLimiter.js  # Rate limiting configuration
+│   └── validate.js     # Request validation middleware
+├── models/             # Sequelize models
+│   ├── User.js         # User model definition
+│   └── index.js        # Model initialization and associations
+├── routes/             # Express routes
+│   ├── auth.js         # Authentication endpoints
+│   ├── users.js        # User management endpoints
+│   └── upload.js       # File upload endpoints
+├── services/           # Business logic services
+│   └── emailService.js # Email sending service
+├── validators/         # Joi validation schemas
+│   └── authValidator.js # Authentication request validators
+├── migrations/         # Database migrations
+├── seeders/           # Database seeders
+├── templates/         # Email templates
+└── server.js          # Application entry point
+```
 
 ## 🚀 Production Deployment
 
-1. Set \`NODE_ENV=production\` in your environment
+1. Set `NODE_ENV=production` in your environment
 2. Configure production database
 3. Set secure JWT secret
 4. Configure SMTP for emails
