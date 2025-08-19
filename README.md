@@ -24,7 +24,7 @@ A comprehensive Express.js API template with modern features including authentic
 
 ## 📋 Prerequisites
 
-- Node.js (>= 18.0.0) or Bun (>= 1.0.0)
+- Node.js (>= 22.0.0) or Bun (>= 1.0.0)
 - npm, yarn, pnpm, or bun
 
 ### Installing Package Managers

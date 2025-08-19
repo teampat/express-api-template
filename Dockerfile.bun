@@ -1,0 +1,33 @@
+# Bun Dockerfile
+FROM oven/bun:1-alpine as base
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for native modules (sharp, etc.)
+RUN apk add --no-cache \
+    vips-dev \
+    curl
+
+# Copy package files
+COPY package*.json bun.lockb* ./
+
+# Install dependencies
+RUN bun install --frozen-lockfile --production
+
+# Copy source code
+COPY . .
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S bunuser && \
+    adduser -S bunuser -u 1001
+
+# Change ownership of the app directory
+RUN chown -R bunuser:bunuser /app
+USER bunuser
+
+# Expose port
+EXPOSE 3000
+
+# Start the application
+CMD ["bun", "start"]

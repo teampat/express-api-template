@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  # Main API service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.nodejs
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_DIALECT=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=express_api
+      - DB_USERNAME=root
+      - DB_PASSWORD=rootpassword
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+      - UPLOAD_STORAGE=local
+      - UPLOAD_PATH=uploads/
+      - EMAIL_HOST=mailhog
+      - EMAIL_PORT=1025
+      - EMAIL_SECURE=false
+    volumes:
+      - uploads:/app/uploads
+      - logs:/app/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: express_api
+      MYSQL_USER: api_user
+      MYSQL_PASSWORD: api_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # MailHog for email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"  # SMTP port
+      - "8025:8025"  # Web UI port
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # MinIO for S3-compatible storage (optional)
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+  redis_data:
+  minio_data:
+  uploads:
+  logs:
+
+networks:
+  app-network:
+    driver: bridge

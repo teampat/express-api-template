@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # Development API service (Node.js with hot reload)
+  api-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.nodejs
+      target: base
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_DIALECT=sqlite
+      - DB_STORAGE=database.sqlite
+      - JWT_SECRET=development-jwt-secret
+      - UPLOAD_STORAGE=local
+      - UPLOAD_PATH=uploads/
+      - EMAIL_HOST=mailhog
+      - EMAIL_PORT=1025
+      - EMAIL_SECURE=false
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - uploads:/app/uploads
+      - logs:/app/logs
+    command: npm run dev
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # MailHog for email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"  # SMTP port
+      - "8025:8025"  # Web UI port
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # MinIO for S3-compatible storage testing
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  minio_data:
+  uploads:
+  logs:
+
+networks:
+  app-network:
+    driver: bridge
