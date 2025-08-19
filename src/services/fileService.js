@@ -94,7 +94,9 @@ class FileService {
       // For S3, generate a URL (this could be a signed URL if needed)
       return S3Service.getPublicUrl(filename);
     } else {
-      return `/uploads/${filename}`;
+      // Remove trailing slash if present and add leading slash for URL
+      const cleanPath = storageConfig.localPath.replace(/\/$/, '');
+      return `/${cleanPath}/${filename}`;
     }
   }
 
