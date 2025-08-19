@@ -24,8 +24,31 @@ A comprehensive Express.js API template with modern features including authentic
 
 ## 📋 Prerequisites
 
-- Node.js (>= 18.0.0)
-- npm or yarn
+- Node.js (>= 18.0.0) or Bun (>= 1.0.0)
+- npm, yarn, pnpm, or bun
+
+### Installing Package Managers
+
+**pnpm with Corepack (Recommended - Node.js 16.13+):**
+```bash
+corepack enable
+corepack prepare pnpm@latest --activate
+```
+
+**pnpm with npm:**
+```bash
+npm install -g pnpm
+```
+
+**pnpm with standalone script:**
+```bash
+curl -fsSL https://get.pnpm.io/install.sh | sh -
+```
+
+**Bun (All-in-one toolkit):**
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
 
 ## 🛠️ Installation
 
@@ -36,8 +59,25 @@ A comprehensive Express.js API template with modern features including authentic
     ```
 
 2. Install dependencies:
+
+    **Using npm:**
     ```bash
     npm install
+    ```
+
+    **Using yarn:**
+    ```bash
+    yarn install
+    ```
+
+    **Using pnpm:**
+    ```bash
+    pnpm install
+    ```
+
+    **Using bun:**
+    ```bash
+    bun install
     ```
 
 3. Copy environment variables:
@@ -48,20 +88,71 @@ A comprehensive Express.js API template with modern features including authentic
 4. Edit the `.env` file with your configuration
 
 5. Run database migrations (optional - SQLite works out of the box):
+
+    **Using npm:**
     ```bash
     npm run migrate
     ```
 
+    **Using yarn:**
+    ```bash
+    yarn migrate
+    ```
+
+    **Using pnpm:**
+    ```bash
+    pnpm migrate
+    ```
+
+    **Using bun:**
+    ```bash
+    bun run migrate
+    ```
+
 6. Seed the database with sample data (optional):
+
+    **Using npm:**
     ```bash
     npm run seed
+    ```
+
+    **Using yarn:**
+    ```bash
+    yarn seed
+    ```
+
+    **Using pnpm:**
+    ```bash
+    pnpm seed
+    ```
+
+    **Using bun:**
+    ```bash
+    bun run seed
     ```
 
 ## 🚀 Quick Start
 
 1. Start the development server:
+
+    **Using npm:**
     ```bash
     npm run dev
+    ```
+
+    **Using yarn:**
+    ```bash
+    yarn dev
+    ```
+
+    **Using pnpm:**
+    ```bash
+    pnpm dev
+    ```
+
+    **Using bun:**
+    ```bash
+    bun run dev
     ```
 
 2. The API will be available at `http://localhost:3000`
@@ -69,6 +160,39 @@ A comprehensive Express.js API template with modern features including authentic
 3. View API documentation at `http://localhost:3000/api-docs`
 
 4. Check health endpoint: `http://localhost:3000/health`
+
+## ⚡ Running with Bun
+
+This project is fully compatible with Bun! Here are some Bun-specific benefits and commands:
+
+### Why Bun?
+- **🚀 Performance**: Up to 4x faster than Node.js for many operations
+- **📦 Built-in package manager**: No need for separate package managers
+- **🔧 Built-in test runner**: `bun test` works out of the box
+- **📁 Built-in bundler**: Fast bundling capabilities
+- **🔄 Node.js compatibility**: Drop-in replacement for most Node.js apps
+
+### Bun Commands
+```bash
+# Install dependencies
+bun install
+
+# Start development server (with hot reload)
+bun run dev
+
+# Start production server
+bun run start
+
+# Run tests
+bun test
+
+# Run specific scripts
+bun run migrate
+bun run seed
+```
+
+### Note on Database Drivers
+All database drivers (SQLite, MySQL, PostgreSQL) work seamlessly with Bun thanks to its Node.js compatibility layer.
 
 ## 📚 API Documentation
 
