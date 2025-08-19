@@ -15,7 +15,9 @@
     "seed:undo": "npx sequelize-cli db:seed:undo:all",
     "db:create": "npx sequelize-cli db:create",
     "db:drop": "npx sequelize-cli db:drop",
-    "docs": "swagger-jsdoc -d swaggerDef.js src/routes/*.js -o swagger.json"
+    "docs": "swagger-jsdoc -d swaggerDef.js src/routes/*.js -o swagger.json",
+    "examples": "node examples/utils-examples.js",
+    "utils:examples": "node examples/utils-examples.js"
   },
   "keywords": [
     "express",

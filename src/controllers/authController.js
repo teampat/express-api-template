@@ -1,5 +1,6 @@
 const AuthService = require('../services/authService');
 const { logger } = require('../config/logger');
+const { successResponse, errorResponse, createdResponse } = require('../utils');
 
 /**
  * Auth Controller
@@ -16,28 +17,15 @@ class AuthController {
       const user = await AuthService.createUser({ email, password, firstName, lastName });
       const token = AuthService.generateToken(user);
 
-      res.status(201).json({
-        success: true,
-        message: 'User registered successfully',
-        data: {
-          user,
-          token
-        }
-      });
+      return createdResponse(res, { user, token }, 'User registered successfully');
     } catch (error) {
       logger.error('Registration error:', error);
       
       if (error.message === 'User with this email already exists') {
-        return res.status(400).json({
-          success: false,
-          message: error.message
-        });
+        return errorResponse(res, error.message, 400);
       }
 
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error'
-      });
+      return errorResponse(res, 'Internal server error', 500);
     }
   }
 
@@ -51,28 +39,15 @@ class AuthController {
       const user = await AuthService.authenticateUser(email, password);
       const token = AuthService.generateToken(user);
 
-      res.json({
-        success: true,
-        message: 'Login successful',
-        data: {
-          user: user.toJSON(),
-          token
-        }
-      });
+      return successResponse(res, { user, token }, 'Login successful');
     } catch (error) {
       logger.error('Login error:', error);
       
       if (error.message === 'Invalid email or password' || error.message === 'Account is deactivated') {
-        return res.status(401).json({
-          success: false,
-          message: error.message
-        });
+        return errorResponse(res, error.message, 401);
       }
 
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error'
-      });
+      return errorResponse(res, 'Internal server error', 500);
     }
   }
 
@@ -81,16 +56,10 @@ class AuthController {
    */
   static async getCurrentUser(req, res) {
     try {
-      res.json({
-        success: true,
-        data: req.user
-      });
+      return successResponse(res, req.user, 'User profile retrieved successfully');
     } catch (error) {
       logger.error('Get current user error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error'
-      });
+      return errorResponse(res, 'Internal server error', 500);
     }
   }
 

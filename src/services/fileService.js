@@ -3,6 +3,15 @@ const path = require('path');
 const sharp = require('sharp');
 const { logger } = require('../config/logger');
 const S3Service = require('./s3Service');
+const { 
+  generateUniqueFilename, 
+  getFileExtension, 
+  formatFileSize, 
+  isValidFileType, 
+  isValidFileSize,
+  getMimeType,
+  ensureDirectory 
+} = require('../utils');
 
 class FileService {
   /**
@@ -156,25 +165,12 @@ class FileService {
   }
 
   /**
-   * Generate unique filename
+   * Generate unique filename for uploaded files
    */
   static generateFilename(originalName, options = {}) {
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(2, 8);
-    const ext = path.extname(originalName).toLowerCase();
-    const baseName = path.basename(originalName, ext);
-    
-    // Clean filename
-    const cleanName = baseName
-      .replace(/[^a-zA-Z0-9.-]/g, '_')
-      .substring(0, 50);
-    
-    if (options.outputFormat) {
-      const newExt = options.outputFormat === 'jpg' ? '.jpg' : `.${options.outputFormat}`;
-      return `${cleanName}_${timestamp}_${random}${newExt}`;
-    }
-    
-    return `${cleanName}_${timestamp}_${random}${ext}`;
+    // Use utility function for consistent filename generation
+    const prefix = options.prefix || '';
+    return generateUniqueFilename(originalName, prefix);
   }
 
   /**

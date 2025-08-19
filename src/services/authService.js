@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 const User = require('../models/User');
 const emailService = require('./emailService');
 const { logger } = require('../config/logger');
+const { generateSecureToken, generateUUID } = require('../utils');
 
 /**
  * Authentication Service
@@ -94,8 +94,8 @@ class AuthService {
       return { success: true, message: 'If the email exists, a password reset link has been sent' };
     }
 
-    // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    // Generate reset token using utils
+    const resetToken = generateSecureToken(32);
     const resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     await user.update({

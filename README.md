@@ -8,7 +8,52 @@ A comprehensive Express.js API template with modern features including authentic
 - **Database Support** - SQLite (default), MySQL/MariaDB and PostgreSQL with Sequelize ORM
 - **Zero Database Setup** - Uses SQLite by default for immediate development
 - **Authentication** - JWT-based authentication system
-- **File Upload Support** - Dual storage system supporting both local storage and S3-compatible object storage (AWS S3, MinIO, DigitalOcean Spaces) with advanced image processing
+- **File Upload Support** - Dual storage system supportImport specific utilities:
+```javascript
+const { formatDate, isValidEmail, successResponse } = require('./src/utils');
+```
+
+### 🔍 Utility Examples
+
+Run the comprehensive examples to see all utilities in action:
+
+**Using npm:**
+```bash
+npm run examples
+```
+
+**Using yarn:**
+```bash
+yarn examples
+```
+
+**Using pnpm:**
+```bash
+pnpm examples
+```
+
+**Using bun:**
+```bash
+bun run examples
+```
+
+This will demonstrate:
+- Date formatting and calculations
+- String transformations and validation
+- Data validation and sanitization
+- Cryptographic operations
+- Standardized API responses
+- File operations and validation
+
+## 🔒 Security Features
+
+- **Helmet** - Sets various HTTP headers
+- **CORS** - Cross-Origin Resource Sharing
+- **Rate Limiting** - Prevents abuse
+- **Input Validation** - Joi validation schemas
+- **JWT Authentication** - Secure token-based auth
+- **Password Hashing** - bcrypt with salt rounds
+- **SQL Injection Protection** - Sequelize ORM storage and S3-compatible object storage (AWS S3, MinIO, DigitalOcean Spaces) with advanced image processing
 - **Image Processing** - Automatic resize, format conversion (JPG, WebP, AVIF, PNG), quality optimization with environment-based configuration
 - **Redis Integration** - Optional Redis support for caching, session management, rate limiting, and background job processing
 - **Database Migrations** - Full migration and seeding support
@@ -495,7 +540,88 @@ SMTP_PASS=your-app-password
 
 Email templates are located in `src/templates/`.
 
-## 🔒 Security Features
+## �️ Utility Functions
+
+The API includes a comprehensive set of utility functions in `src/utils/` to help with common operations:
+
+### 📅 Date Utils
+```javascript
+const { formatToISO, formatDate, addDays, isToday } = require('./src/utils');
+
+// Format dates
+formatToISO(new Date()); // "2023-12-25T10:30:00.000Z"
+formatDate(new Date()); // "December 25, 2023"
+
+// Date calculations
+addDays(new Date(), 7); // Add 7 days
+isToday(someDate); // Check if date is today
+```
+
+### 🔤 String Utils
+```javascript
+const { capitalize, toCamelCase, slugify, truncate } = require('./src/utils');
+
+// String transformations
+capitalize('hello world'); // "Hello world"
+toCamelCase('hello world'); // "helloWorld"
+slugify('Hello World!'); // "hello-world"
+truncate('Long text...', 50); // Truncate with ellipsis
+```
+
+### ✅ Validation Utils
+```javascript
+const { isValidEmail, validatePassword, isEmpty } = require('./src/utils');
+
+// Validate data
+isValidEmail('user@example.com'); // true
+validatePassword('StrongPass123!'); // { isValid: true, score: 5 }
+isEmpty(value); // Check for empty values
+```
+
+### 🔐 Crypto Utils
+```javascript
+const { generateSecureToken, hashPassword, generateUUID } = require('./src/utils');
+
+// Secure operations
+generateSecureToken(32); // Random hex token
+generateUUID(); // UUID v4
+await hashPassword('password'); // Bcrypt hash
+```
+
+### 📤 Response Utils
+```javascript
+const { successResponse, errorResponse, notFoundResponse } = require('./src/utils');
+
+// Standardized API responses
+successResponse(res, data, 'Success message');
+errorResponse(res, 'Error message', 400);
+notFoundResponse(res, 'User');
+```
+
+### 📁 File Utils
+```javascript
+const { getFileExtension, formatFileSize, isValidFileType } = require('./src/utils');
+
+// File operations
+getFileExtension('image.jpg'); // "jpg"
+formatFileSize(1048576); // "1 MB"
+isValidFileType('image.jpg', ['jpg', 'png']); // true
+```
+
+### 📚 Usage Examples
+
+Import all utilities:
+```javascript
+const utils = require('./src/utils');
+// Access: utils.formatDate(), utils.isValidEmail(), etc.
+```
+
+Import specific utilities:
+```javascript
+const { formatDate, isValidEmail, successResponse } = require('./src/utils');
+```
+
+## �🔒 Security Features
 
 - **Helmet** - Sets various HTTP headers
 - **CORS** - Cross-Origin Resource Sharing
@@ -571,12 +697,22 @@ express-api-template/
 │   ├── models/                 # Sequelize database models
 │   ├── routes/                 # Express route definitions
 │   ├── services/               # Business logic layer
+│   ├── utils/                  # Utility functions
+│   │   ├── dateUtils.js        # Date operations
+│   │   ├── stringUtils.js      # String transformations
+│   │   ├── validationUtils.js  # Data validation helpers
+│   │   ├── cryptoUtils.js      # Cryptographic functions
+│   │   ├── responseUtils.js    # API response helpers
+│   │   ├── fileUtils.js        # File operations
+│   │   └── index.js            # Utils entry point
 │   ├── validators/             # Input validation schemas
 │   ├── migrations/             # Database migrations
 │   ├── seeders/                # Database seeders
 │   ├── templates/              # Email templates
 │   └── server.js               # Application entry point
 ├── tests/                      # Unit test suites
+├── examples/                   # Usage examples and demos
+│   └── utils-examples.js       # Utils demonstration
 ├── uploads/                    # Local file storage
 ├── logs/                       # Application logs
 ├── coverage/                   # Test coverage reports
@@ -590,7 +726,9 @@ express-api-template/
 ### Key Directories
 
 - **`src/`** - Main application source code
-- **`tests/`** - Comprehensive unit test suite (103 tests)
+- **`src/utils/`** - Comprehensive utility functions library
+- **`tests/`** - Comprehensive unit test suite (150+ tests)
+- **`examples/`** - Usage examples and demonstrations
 - **`uploads/`** - Local file storage directory
 - **Docker files** - Multiple deployment configurations (Node.js, Bun)
 - **Documentation** - README, API docs, and configuration guides
