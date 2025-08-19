@@ -4,7 +4,7 @@ A comprehensive Express.js API template with modern features including authentic
 
 ## 🚀 Features
 
-- **Express.js v4** - Stable version of Express.js
+- **Express.js v5** - Latest version of Express.js with native async/await support
 - **Database Support** - SQLite (default), MySQL and PostgreSQL with Sequelize ORM
 - **Zero Database Setup** - Uses SQLite by default for immediate development
 - **Authentication** - JWT-based authentication system

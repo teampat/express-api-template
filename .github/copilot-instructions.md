@@ -4,7 +4,7 @@ This is a comprehensive Express.js API template project with the following struc
 
 ## Project Overview
 
-- **Framework**: Express.js v4
+- **Framework**: Express.js v5
 - **Language**: JavaScript (Node.js)
 - **Database**: Sequelize ORM (supports SQLite, MySQL, PostgreSQL)
 - **Authentication**: JWT-based authentication

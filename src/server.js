@@ -1,5 +1,4 @@
 require('dotenv').config();
-require('express-async-errors');
 
 const express = require('express');
 const cors = require('cors');
@@ -66,8 +65,8 @@ app.use('/api/upload', uploadRoutes);
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
 
-// 404 handler
-app.use('*', (req, res) => {
+// 404 handler - Express v5 compatible
+app.use((req, res, next) => {
   res.status(404).json({
     success: false,
     message: 'Route not found'
