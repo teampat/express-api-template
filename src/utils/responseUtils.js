@@ -12,12 +12,11 @@
  * @returns {Object} Express response
  */
 const successResponse = (res, data = null, message = 'Success', statusCode = 200) => {
-  return res.status(statusCode).json({
-    success: true,
-    message,
-    data,
-    timestamp: new Date().toISOString()
-  });
+    return res.status(statusCode).json({
+        success: true,
+        message,
+        data
+    });
 };
 
 /**
@@ -29,12 +28,11 @@ const successResponse = (res, data = null, message = 'Success', statusCode = 200
  * @returns {Object} Express response
  */
 const errorResponse = (res, message = 'Internal Server Error', statusCode = 500, errors = null) => {
-  return res.status(statusCode).json({
-    success: false,
-    message,
-    errors,
-    timestamp: new Date().toISOString()
-  });
+    return res.status(statusCode).json({
+        success: false,
+        message,
+        errors
+    });
 };
 
 /**
@@ -45,12 +43,11 @@ const errorResponse = (res, message = 'Internal Server Error', statusCode = 500,
  * @returns {Object} Express response
  */
 const validationErrorResponse = (res, errors, message = 'Validation failed') => {
-  return res.status(400).json({
-    success: false,
-    message,
-    errors: Array.isArray(errors) ? errors : [errors],
-    timestamp: new Date().toISOString()
-  });
+    return res.status(400).json({
+        success: false,
+        message,
+        errors: Array.isArray(errors) ? errors : [errors]
+    });
 };
 
 /**
@@ -60,11 +57,10 @@ const validationErrorResponse = (res, errors, message = 'Validation failed') => 
  * @returns {Object} Express response
  */
 const notFoundResponse = (res, resource = 'Resource') => {
-  return res.status(404).json({
-    success: false,
-    message: `${resource} not found`,
-    timestamp: new Date().toISOString()
-  });
+    return res.status(404).json({
+        success: false,
+        message: `${resource} not found`
+    });
 };
 
 /**
@@ -74,11 +70,10 @@ const notFoundResponse = (res, resource = 'Resource') => {
  * @returns {Object} Express response
  */
 const unauthorizedResponse = (res, message = 'Unauthorized access') => {
-  return res.status(401).json({
-    success: false,
-    message,
-    timestamp: new Date().toISOString()
-  });
+    return res.status(401).json({
+        success: false,
+        message
+    });
 };
 
 /**
@@ -88,11 +83,10 @@ const unauthorizedResponse = (res, message = 'Unauthorized access') => {
  * @returns {Object} Express response
  */
 const forbiddenResponse = (res, message = 'Access forbidden') => {
-  return res.status(403).json({
-    success: false,
-    message,
-    timestamp: new Date().toISOString()
-  });
+    return res.status(403).json({
+        success: false,
+        message
+    });
 };
 
 /**
@@ -102,11 +96,10 @@ const forbiddenResponse = (res, message = 'Access forbidden') => {
  * @returns {Object} Express response
  */
 const tooManyRequestsResponse = (res, message = 'Too many requests') => {
-  return res.status(429).json({
-    success: false,
-    message,
-    timestamp: new Date().toISOString()
-  });
+    return res.status(429).json({
+        success: false,
+        message
+    });
 };
 
 /**
@@ -118,20 +111,19 @@ const tooManyRequestsResponse = (res, message = 'Too many requests') => {
  * @returns {Object} Express response
  */
 const paginatedResponse = (res, data, pagination, message = 'Success') => {
-  return res.status(200).json({
-    success: true,
-    message,
-    data,
-    pagination: {
-      page: pagination.page || 1,
-      limit: pagination.limit || 10,
-      total: pagination.total || 0,
-      totalPages: Math.ceil((pagination.total || 0) / (pagination.limit || 10)),
-      hasNext: pagination.page < Math.ceil((pagination.total || 0) / (pagination.limit || 10)),
-      hasPrev: pagination.page > 1
-    },
-    timestamp: new Date().toISOString()
-  });
+    return res.status(200).json({
+        success: true,
+        message,
+        data,
+        pagination: {
+            page: pagination.page || 1,
+            limit: pagination.limit || 10,
+            total: pagination.total || 0,
+            totalPages: Math.ceil((pagination.total || 0) / (pagination.limit || 10)),
+            hasNext: pagination.page < Math.ceil((pagination.total || 0) / (pagination.limit || 10)),
+            hasPrev: pagination.page > 1
+        }
+    });
 };
 
 /**
@@ -142,7 +134,7 @@ const paginatedResponse = (res, data, pagination, message = 'Success') => {
  * @returns {Object} Express response
  */
 const createdResponse = (res, data, message = 'Resource created successfully') => {
-  return successResponse(res, data, message, 201);
+    return successResponse(res, data, message, 201);
 };
 
 /**
@@ -151,7 +143,7 @@ const createdResponse = (res, data, message = 'Resource created successfully') =
  * @returns {Object} Express response
  */
 const noContentResponse = (res) => {
-  return res.status(204).send();
+    return res.status(204).send();
 };
 
 /**
@@ -161,11 +153,10 @@ const noContentResponse = (res) => {
  * @returns {Object} Express response
  */
 const conflictResponse = (res, message = 'Resource already exists') => {
-  return res.status(409).json({
-    success: false,
-    message,
-    timestamp: new Date().toISOString()
-  });
+    return res.status(409).json({
+        success: false,
+        message
+    });
 };
 
 /**
@@ -176,7 +167,7 @@ const conflictResponse = (res, message = 'Resource already exists') => {
  * @returns {Object} Express response
  */
 const badRequestResponse = (res, message = 'Bad request', errors = null) => {
-  return errorResponse(res, message, 400, errors);
+    return errorResponse(res, message, 400, errors);
 };
 
 /**
@@ -186,25 +177,24 @@ const badRequestResponse = (res, message = 'Bad request', errors = null) => {
  * @returns {Object} Express response
  */
 const serviceUnavailableResponse = (res, message = 'Service temporarily unavailable') => {
-  return res.status(503).json({
-    success: false,
-    message,
-    timestamp: new Date().toISOString()
-  });
+    return res.status(503).json({
+        success: false,
+        message
+    });
 };
 
 module.exports = {
-  successResponse,
-  errorResponse,
-  validationErrorResponse,
-  notFoundResponse,
-  unauthorizedResponse,
-  forbiddenResponse,
-  tooManyRequestsResponse,
-  paginatedResponse,
-  createdResponse,
-  noContentResponse,
-  conflictResponse,
-  badRequestResponse,
-  serviceUnavailableResponse
+    successResponse,
+    errorResponse,
+    validationErrorResponse,
+    notFoundResponse,
+    unauthorizedResponse,
+    forbiddenResponse,
+    tooManyRequestsResponse,
+    paginatedResponse,
+    createdResponse,
+    noContentResponse,
+    conflictResponse,
+    badRequestResponse,
+    serviceUnavailableResponse
 };
