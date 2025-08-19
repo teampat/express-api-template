@@ -2,9 +2,9 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const UploadController = require('../controllers/uploadController');
 // const sharp = require('sharp'); // Optional - uncomment if you need image processing
 const { authenticate } = require('../middleware/auth');
-const { logger } = require('../config/logger');
 
 const router = express.Router();
 
@@ -105,82 +105,7 @@ const upload = multer({
  *       400:
  *         description: Upload error
  */
-router.post('/single', authenticate, upload.single('file'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'No file uploaded'
-      });
-    }
-
-    let processedFile = req.file;
-
-    // Image processing with Sharp (commented out - install sharp if needed)
-    /*
-    if (req.file.mimetype.startsWith('image/')) {
-      const { resize, quality } = req.body;
-      
-      if (resize || quality) {
-        const processedPath = path.join(uploadDir, `processed_${req.file.filename}`);
-        let sharpInstance = sharp(req.file.path);
-
-        // Resize if dimensions provided
-        if (resize) {
-          const [width, height] = resize.split('x').map(Number);
-          if (width && height) {
-            sharpInstance = sharpInstance.resize(width, height, { fit: 'inside', withoutEnlargement: true });
-          }
-        }
-
-        // Set quality for JPEG
-        if (quality && req.file.mimetype === 'image/jpeg') {
-          sharpInstance = sharpInstance.jpeg({ quality: parseInt(quality) });
-        }
-
-        await sharpInstance.toFile(processedPath);
-
-        // Remove original file and use processed one
-        fs.unlinkSync(req.file.path);
-        processedFile = {
-          ...req.file,
-          path: processedPath,
-          size: fs.statSync(processedPath).size
-        };
-      }
-    }
-    */
-
-    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${path.basename(processedFile.path)}`;
-
-    logger.info(`File uploaded: ${processedFile.originalname} by user ${req.user.email}`);
-
-    res.json({
-      success: true,
-      message: 'File uploaded successfully',
-      data: {
-        filename: path.basename(processedFile.path),
-        originalName: processedFile.originalname,
-        size: processedFile.size,
-        mimetype: processedFile.mimetype,
-        url: fileUrl
-      }
-    });
-  } catch (error) {
-    logger.error('File upload error:', error);
-
-    // Clean up file if it exists
-    if (req.file?.path && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
-
-    res.status(500).json({
-      success: false,
-      message: 'File upload failed',
-      error: error.message
-    });
-  }
-});
+router.post('/single', authenticate, upload.single('file'), UploadController.uploadSingle);
 
 /**
  * @swagger
@@ -230,53 +155,7 @@ router.post('/single', authenticate, upload.single('file'), async (req, res) => 
  *                       url:
  *                         type: string
  */
-router.post('/multiple', authenticate, upload.array('files', 5), async (req, res) => {
-  try {
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'No files uploaded'
-      });
-    }
-
-    const uploadedFiles = req.files.map(file => {
-      const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
-
-      return {
-        filename: file.filename,
-        originalName: file.originalname,
-        size: file.size,
-        mimetype: file.mimetype,
-        url: fileUrl
-      };
-    });
-
-    logger.info(`${req.files.length} files uploaded by user ${req.user.email}`);
-
-    res.json({
-      success: true,
-      message: `${req.files.length} files uploaded successfully`,
-      data: uploadedFiles
-    });
-  } catch (error) {
-    logger.error('Multiple file upload error:', error);
-
-    // Clean up files if they exist
-    if (req.files) {
-      req.files.forEach(file => {
-        if (fs.existsSync(file.path)) {
-          fs.unlinkSync(file.path);
-        }
-      });
-    }
-
-    res.status(500).json({
-      success: false,
-      message: 'File upload failed',
-      error: error.message
-    });
-  }
-});
+router.post('/multiple', authenticate, upload.array('files', 5), UploadController.uploadMultiple);
 
 /**
  * @swagger
@@ -299,43 +178,6 @@ router.post('/multiple', authenticate, upload.array('files', 5), async (req, res
  *       404:
  *         description: File not found
  */
-router.delete('/:filename', authenticate, async (req, res) => {
-  try {
-    const { filename } = req.params;
-    const filePath = path.join(uploadDir, filename);
-
-    // Security check: ensure filename doesn't contain path traversal
-    if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid filename'
-      });
-    }
-
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({
-        success: false,
-        message: 'File not found'
-      });
-    }
-
-    fs.unlinkSync(filePath);
-
-    logger.info(`File deleted: ${filename} by user ${req.user.email}`);
-
-    res.json({
-      success: true,
-      message: 'File deleted successfully'
-    });
-  } catch (error) {
-    logger.error('File deletion error:', error);
-
-    res.status(500).json({
-      success: false,
-      message: 'File deletion failed',
-      error: error.message
-    });
-  }
-});
+router.delete('/:filename', authenticate, UploadController.deleteFile);
 
 module.exports = router;

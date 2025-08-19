@@ -1,10 +1,8 @@
 const express = require('express');
-const { Op } = require('sequelize');
-const User = require('../models/User');
+const UserController = require('../controllers/userController');
 const { authenticate, authorize } = require('../middleware/auth');
 const validate = require('../middleware/validate');
 const { updateProfileSchema, changePasswordSchema } = require('../validators/authValidator');
-const { logger } = require('../config/logger');
 
 const router = express.Router();
 
@@ -51,12 +49,7 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/me', authenticate, async (req, res) => {
-  res.json({
-    success: true,
-    data: req.user
-  });
-});
+router.get('/me', authenticate, UserController.getCurrentUser);
 
 /**
  * @swagger
@@ -146,53 +139,7 @@ router.get('/me', authenticate, async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/', authenticate, authorize('admin'), async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = Math.min(parseInt(req.query.limit) || 10, 100);
-  const offset = (page - 1) * limit;
-  const { search, role, isActive } = req.query;
-
-  // Build where clause
-  const where = {};
-
-  if (search) {
-    where[Op.or] = [
-      { email: { [Op.like]: `%${search}%` } },
-      { firstName: { [Op.like]: `%${search}%` } },
-      { lastName: { [Op.like]: `%${search}%` } }
-    ];
-  }
-
-  if (role) {
-    where.role = role;
-  }
-
-  if (isActive !== undefined) {
-    where.isActive = isActive === 'true';
-  }
-
-  const { count, rows: users } = await User.findAndCountAll({
-    where,
-    limit,
-    offset,
-    order: [['createdAt', 'DESC']]
-  });
-
-  const totalPages = Math.ceil(count / limit);
-
-  res.json({
-    success: true,
-    data: {
-      users,
-      pagination: {
-        page,
-        limit,
-        total: count,
-        pages: totalPages
-      }
-    }
-  });
-});
+router.get('/', authenticate, authorize('admin'), UserController.getAllUsers);
 
 /**
  * @swagger
@@ -260,35 +207,7 @@ router.get('/', authenticate, authorize('admin'), async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/me/change-password', authenticate, validate(changePasswordSchema), async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
-  const user = req.user;
-
-  // Verify current password
-  const bcrypt = require('bcryptjs');
-  const isValidPassword = await bcrypt.compare(currentPassword, user.password);
-
-  if (!isValidPassword) {
-    return res.status(400).json({
-      success: false,
-      message: 'Current password is incorrect'
-    });
-  }
-
-  // Hash new password
-  const saltRounds = 12;
-  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-
-  // Update password
-  await user.update({ password: hashedPassword });
-
-  logger.info(`Password changed for user: ${user.email}`);
-
-  res.json({
-    success: true,
-    message: 'Password changed successfully'
-  });
-});
+router.put('/me/change-password', authenticate, validate(changePasswordSchema), UserController.changePassword);
 
 /**
  * @swagger
@@ -345,31 +264,7 @@ router.put('/me/change-password', authenticate, validate(changePasswordSchema), 
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/:id', authenticate, async (req, res) => {
-  const { id } = req.params;
-
-  // Users can only view their own profile unless they're admin
-  if (req.user.role !== 'admin' && req.user.id !== parseInt(id)) {
-    return res.status(403).json({
-      success: false,
-      message: 'Access denied'
-    });
-  }
-
-  const user = await User.findByPk(id);
-
-  if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: 'User not found'
-    });
-  }
-
-  res.json({
-    success: true,
-    data: user
-  });
-});
+router.get('/:id', authenticate, UserController.getUserById);
 
 /**
  * @swagger
@@ -446,58 +341,7 @@ router.get('/:id', authenticate, async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/:id', authenticate, validate(updateProfileSchema), async (req, res) => {
-  const { id } = req.params;
-  const { firstName, lastName, email } = req.body;
-
-  // Users can only update their own profile unless they're admin
-  if (req.user.role !== 'admin' && req.user.id !== parseInt(id)) {
-    return res.status(403).json({
-      success: false,
-      message: 'Access denied'
-    });
-  }
-
-  const user = await User.findByPk(id);
-
-  if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: 'User not found'
-    });
-  }
-
-  // Check if email is already taken by another user
-  if (email && email !== user.email) {
-    const existingUser = await User.findOne({
-      where: {
-        email,
-        id: { [Op.ne]: id }
-      }
-    });
-
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email is already taken'
-      });
-    }
-  }
-
-  await user.update({
-    ...(firstName !== undefined && { firstName }),
-    ...(lastName !== undefined && { lastName }),
-    ...(email !== undefined && { email })
-  });
-
-  logger.info(`User updated: ${user.email}`);
-
-  res.json({
-    success: true,
-    message: 'User updated successfully',
-    data: user
-  });
-});
+router.put('/:id', authenticate, validate(updateProfileSchema), UserController.updateUserById);
 
 /**
  * @swagger
@@ -645,34 +489,6 @@ router.patch('/:id/toggle-status', authenticate, authorize('admin'), async (req,
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
-  const { id } = req.params;
-
-  const user = await User.findByPk(id);
-
-  if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: 'User not found'
-    });
-  }
-
-  // Prevent admin from deleting themselves
-  if (user.id === req.user.id) {
-    return res.status(400).json({
-      success: false,
-      message: 'Cannot delete your own account'
-    });
-  }
-
-  await user.destroy();
-
-  logger.info(`User deleted: ${user.email}`);
-
-  res.json({
-    success: true,
-    message: 'User deleted successfully'
-  });
-});
+router.delete('/:id', authenticate, authorize('admin'), UserController.deleteUser);
 
 module.exports = router;
