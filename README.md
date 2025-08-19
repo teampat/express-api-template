@@ -8,7 +8,7 @@ A comprehensive Express.js API template with modern features including authentic
 - **Database Support** - SQLite (default), MySQL and PostgreSQL with Sequelize ORM
 - **Zero Database Setup** - Uses SQLite by default for immediate development
 - **Authentication** - JWT-based authentication system
-- **File Upload Support** - Local storage and S3-compatible cloud storage with image processing
+- **File Upload Support** - Local storage and S3-compatible cloud storage with image processing (resize, quality adjustment)
 - **Database Migrations** - Full migration and seeding support
 - **Auto-generated Documentation** - Swagger/OpenAPI 3.0 documentation
 - **Input Validation** - Request validation with Joi
@@ -138,16 +138,36 @@ The API uses JWT-based authentication. Default users (created by seeder):
 
 ### Upload Endpoints:
 
-- `POST /api/upload/single` - Upload single file
-- `POST /api/upload/multiple` - Upload multiple files
+- `POST /api/upload/single` - Upload single file with optional image processing
+- `POST /api/upload/multiple` - Upload multiple files with optional image processing
 - `DELETE /api/upload/:filename` - Delete uploaded file
 
-### Features:
+### Image Processing Features:
 
-- Image processing with Sharp (resize, quality adjustment)
+- **Resize**: Automatically resize images (e.g., `resize=800x600`)
+- **Quality Adjustment**: Compress images for optimal file size (e.g., `quality=85`)
+- **Format Support**: JPEG, PNG, and WebP images
+- **Smart Processing**: Only processes image files, preserves other file types
+- **Error Recovery**: Falls back to original file if processing fails
+
+### Example Usage:
+
+```bash
+# Upload with resize and quality adjustment
+curl -X POST http://localhost:3000/api/upload/single \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@image.jpg" \
+  -F "resize=1200x800" \
+  -F "quality=85"
+```
+
+See [IMAGE_PROCESSING.md](docs/IMAGE_PROCESSING.md) for detailed documentation.
+
+### Other Features:
+
 - File type validation
-- File size limits
-- Automatic thumbnail generation
+- File size limits  
+- Secure file handling
 
 ## 🧪 Testing
 

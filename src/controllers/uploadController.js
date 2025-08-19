@@ -18,8 +18,8 @@ class UploadController {
         });
       }
 
-      const { resize, quality } = req.body;
-      const fileInfo = await FileService.processSingleFile(req.file, { resize, quality });
+      const { resize, quality, convert } = req.body;
+      const fileInfo = await FileService.processSingleFile(req.file, { resize, quality, convert });
 
       logger.info(`File uploaded: ${req.file.originalname} by user ${req.user.email}`);
 
@@ -53,7 +53,8 @@ class UploadController {
         });
       }
 
-      const fileInfos = await FileService.processMultipleFiles(req.files);
+      const { resize, quality, convert } = req.body;
+      const fileInfos = await FileService.processMultipleFiles(req.files, { resize, quality, convert });
 
       logger.info(`${req.files.length} files uploaded by user ${req.user.email}`);
 
