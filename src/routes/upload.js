@@ -76,7 +76,10 @@ const upload = multer({
  *                 type: integer
  *                 minimum: 1
  *                 maximum: 100
- *                 description: JPEG quality (1-100)
+ *                 description: Image quality (1-100)
+ *               outputFormat:
+ *                 type: string
+ *                 description: Output format (jpg, webp, avif, png)
  *     responses:
  *       200:
  *         description: File uploaded successfully
@@ -127,6 +130,17 @@ router.post('/single', authenticate, upload.single('file'), UploadController.upl
  *                 items:
  *                   type: string
  *                   format: binary
+ *               resize:
+ *                 type: string
+ *                 description: Resize dimensions (e.g., "800x600")
+ *               quality:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 100
+ *                 description: Image quality (1-100)
+ *               outputFormat:
+ *                 type: string
+ *                 description: Output format (jpg, webp, avif, png)
  *     responses:
  *       200:
  *         description: Files uploaded successfully
@@ -179,5 +193,79 @@ router.post('/multiple', authenticate, upload.array('files', 5), UploadControlle
  *         description: File not found
  */
 router.delete('/:filename', authenticate, UploadController.deleteFile);
+
+/**
+ * @swagger
+ * /api/upload/info/{filename}:
+ *   get:
+ *     summary: Get file information
+ *     tags: [Upload]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: filename
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Name of the file
+ *     responses:
+ *       200:
+ *         description: File information retrieved successfully
+ *       404:
+ *         description: File not found
+ */
+router.get('/info/:filename', authenticate, UploadController.getFileInfo);
+
+/**
+ * @swagger
+ * /api/upload/list:
+ *   get:
+ *     summary: List all uploaded files
+ *     tags: [Upload]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Files listed successfully
+ */
+router.get('/list', authenticate, UploadController.listFiles);
+
+/**
+ * @swagger
+ * /api/upload/download/{filename}:
+ *   get:
+ *     summary: Download a file
+ *     tags: [Upload]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: filename
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Name of the file to download
+ *     responses:
+ *       200:
+ *         description: File downloaded successfully
+ *       404:
+ *         description: File not found
+ */
+router.get('/download/:filename', authenticate, UploadController.downloadFile);
+
+/**
+ * @swagger
+ * /api/upload/storage/status:
+ *   get:
+ *     summary: Get current storage configuration status
+ *     tags: [Upload]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Storage status retrieved successfully
+ */
+router.get('/storage/status', authenticate, UploadController.getStorageStatus);
 
 module.exports = router;

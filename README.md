@@ -8,7 +8,8 @@ A comprehensive Express.js API template with modern features including authentic
 - **Database Support** - SQLite (default), MySQL and PostgreSQL with Sequelize ORM
 - **Zero Database Setup** - Uses SQLite by default for immediate development
 - **Authentication** - JWT-based authentication system
-- **File Upload Support** - Local storage and S3-compatible cloud storage with image processing (resize, quality adjustment)
+- **File Upload Support** - Dual storage system supporting both local storage and S3-compatible object storage (AWS S3, MinIO, DigitalOcean Spaces) with advanced image processing
+- **Image Processing** - Automatic resize, format conversion (JPG, WebP, AVIF, PNG), quality optimization with environment-based configuration
 - **Database Migrations** - Full migration and seeding support
 - **Auto-generated Documentation** - Swagger/OpenAPI 3.0 documentation
 - **Input Validation** - Request validation with Joi
@@ -134,40 +135,106 @@ The API uses JWT-based authentication. Default users (created by seeder):
 - `DELETE /api/users/:id` - Delete user (Admin only)
 - `PATCH /api/users/:id/toggle-status` - Toggle user status (Admin only)
 
-## 📁 File Upload
+## 📁 File Upload & Storage
+
+### Dual Storage System
+
+The API supports both local storage and S3-compatible object storage with seamless switching:
+
+- **Local Storage**: Files stored on server filesystem
+- **S3-Compatible Storage**: AWS S3, MinIO, DigitalOcean Spaces, and other S3-compatible services
+
+### Storage Configuration
+
+Switch between storage types using environment variables:
+
+```env
+# Local Storage (default)
+UPLOAD_STORAGE=local
+UPLOAD_PATH=uploads/
+
+# S3-Compatible Storage
+UPLOAD_STORAGE=s3
+S3_ENDPOINT=https://s3.amazonaws.com  # For AWS S3, or your S3-compatible endpoint
+S3_REGION=us-east-1
+S3_BUCKET=your-bucket-name
+S3_ACCESS_KEY_ID=your-access-key
+S3_SECRET_ACCESS_KEY=your-secret-key
+S3_FORCE_PATH_STYLE=false  # Set to true for MinIO or other S3-compatible services
+```
+
+### Image Processing Configuration
+
+Control image processing behavior via environment variables:
+
+```env
+# Image Processing Control
+IMAGE_RESIZE=true                    # Enable/disable image resizing
+IMAGE_CONVERT=true                   # Enable/disable automatic format conversion
+IMAGE_QUALITY=80                     # Default image quality (1-100)
+IMAGE_MAX_WIDTH=1920                 # Maximum allowed width
+IMAGE_MAX_HEIGHT=1080                # Maximum allowed height
+MAX_FILE_SIZE=10485760              # Maximum file size in bytes (10MB)
+```
 
 ### Upload Endpoints:
 
 - `POST /api/upload/single` - Upload single file with optional image processing
 - `POST /api/upload/multiple` - Upload multiple files with optional image processing
 - `DELETE /api/upload/:filename` - Delete uploaded file
+- `GET /api/upload/info/:filename` - Get file information
+- `GET /api/upload/list` - List all uploaded files
+- `GET /api/upload/download/:filename` - Download file
+- `GET /api/upload/storage/status` - Get current storage configuration
 
 ### Image Processing Features:
 
-- **Resize**: Automatically resize images (e.g., `resize=800x600`)
-- **Quality Adjustment**: Compress images for optimal file size (e.g., `quality=85`)
-- **Format Support**: JPEG, PNG, and WebP images
-- **Smart Processing**: Only processes image files, preserves other file types
+- **Intelligent Resize**: Automatically resize images that exceed maximum dimensions
+- **Format Conversion**: Convert images to modern formats (WebP, AVIF) for better compression
+- **Quality Control**: Optimize image quality for perfect balance between size and quality
+- **Format Support**: JPEG, PNG, WebP, and AVIF
+- **Conditional Processing**: Only processes image files, preserves other file types
 - **Error Recovery**: Falls back to original file if processing fails
+- **Multi-format Output**: Support for JPG, PNG, WebP, and AVIF output formats
 
 ### Example Usage:
 
 ```bash
-# Upload with resize and quality adjustment
+# Upload with automatic WebP conversion and quality optimization
 curl -X POST http://localhost:3000/api/upload/single \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "file=@image.jpg" \
-  -F "resize=1200x800" \
+  -F "outputFormat=webp" \
   -F "quality=85"
+
+# Upload with custom resize dimensions
+curl -X POST http://localhost:3000/api/upload/single \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@image.jpg" \
+  -F "resize=800x600" \
+  -F "outputFormat=avif" \
+  -F "quality=90"
+
+# Check storage status
+curl -X GET http://localhost:3000/api/upload/storage/status \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-See [IMAGE_PROCESSING.md](docs/IMAGE_PROCESSING.md) for detailed documentation.
+### S3-Compatible Storage Features:
 
-### Other Features:
+- **Multi-provider Support**: AWS S3, MinIO, DigitalOcean Spaces, and more
+- **Multipart Upload**: Efficient handling of large files
+- **Object Metadata**: Automatic content-type detection and metadata storage
+- **Path-style URLs**: Support for both virtual-hosted-style and path-style URLs
+- **Security**: Proper access control and error handling
 
-- File type validation
-- File size limits  
-- Secure file handling
+### File Security:
+
+- File type validation based on MIME type
+- File size limits enforced
+- Secure filename generation
+- Path traversal protection
+- Malicious file detection
 
 ## 🧪 Testing
 
@@ -258,13 +325,45 @@ Log levels: error, warn, info, debug
 Key environment variables:
 
 ```env
+# Server Configuration
 NODE_ENV=development
 PORT=3000
+
+# Database Configuration
 DB_DIALECT=sqlite
+DB_HOST=localhost
+DB_NAME=your_database_name
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+
+# Authentication
 JWT_SECRET=your-jwt-secret
+
+# Email Service
 SMTP_HOST=smtp.gmail.com
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-password
+
+# File Upload & Storage
+UPLOAD_STORAGE=local                 # 'local' or 's3'
+UPLOAD_PATH=uploads/                 # Local storage path
+MAX_FILE_SIZE=10485760              # Maximum file size (10MB)
+ALLOWED_FILE_TYPES=image/jpeg,image/png,image/gif
+
+# Image Processing
+IMAGE_RESIZE=true                    # Enable automatic resizing
+IMAGE_CONVERT=true                   # Enable format conversion
+IMAGE_QUALITY=80                     # Default quality (1-100)
+IMAGE_MAX_WIDTH=1920                 # Maximum width
+IMAGE_MAX_HEIGHT=1080                # Maximum height
+
+# S3-Compatible Storage
+S3_ENDPOINT=https://s3.amazonaws.com # S3 endpoint URL
+S3_REGION=us-east-1                  # S3 region
+S3_BUCKET=your-bucket-name           # S3 bucket name
+S3_ACCESS_KEY_ID=your-access-key     # S3 access key
+S3_SECRET_ACCESS_KEY=your-secret-key # S3 secret key
+S3_FORCE_PATH_STYLE=false           # Use path-style URLs
 ```
 
 ## 📁 Project Structure
@@ -283,11 +382,19 @@ src/
 ├── models/             # Sequelize models
 │   ├── User.js         # User model definition
 │   └── index.js        # Model initialization and associations
+├── controllers/        # Request handlers
+│   ├── authController.js    # Authentication endpoints
+│   ├── userController.js    # User management endpoints
+│   └── uploadController.js  # File upload endpoints
 ├── routes/             # Express routes
 │   ├── auth.js         # Authentication endpoints
 │   ├── users.js        # User management endpoints
 │   └── upload.js       # File upload endpoints
 ├── services/           # Business logic services
+│   ├── authService.js  # Authentication business logic
+│   ├── userService.js  # User management business logic
+│   ├── fileService.js  # File upload and processing service
+│   ├── s3Service.js    # S3-compatible storage service
 │   └── emailService.js # Email sending service
 ├── validators/         # Joi validation schemas
 │   └── authValidator.js # Authentication request validators

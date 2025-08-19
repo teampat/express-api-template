@@ -1,132 +1,209 @@
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 const sharp = require('sharp');
 const { logger } = require('../config/logger');
+const S3Service = require('./s3Service');
 
-/**
- * File Service
- * Contains pure business logic for file operations
- */
 class FileService {
-  
   /**
-   * Get image processing configuration from environment
+   * Get storage configuration
+   */
+  static getStorageConfig() {
+    return {
+      type: process.env.UPLOAD_STORAGE || 'local',
+      localPath: process.env.UPLOAD_PATH || 'uploads/',
+      s3: {
+        endpoint: process.env.S3_ENDPOINT,
+        region: process.env.S3_REGION || 'us-east-1',
+        bucket: process.env.S3_BUCKET,
+        accessKeyId: process.env.S3_ACCESS_KEY_ID,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+        forcePathStyle: process.env.S3_FORCE_PATH_STYLE === 'true'
+      }
+    };
+  }
+
+  /**
+   * Save file to configured storage
+   */
+  static async saveFile(filePath, filename, data = null) {
+    const storageConfig = this.getStorageConfig();
+    
+    if (storageConfig.type === 's3') {
+      // For S3 storage, upload the file
+      if (data) {
+        return await S3Service.uploadFile(filename, data);
+      } else {
+        // Read file data and upload
+        const fileData = fs.readFileSync(filePath);
+        return await S3Service.uploadFile(filename, fileData);
+      }
+    } else {
+      // For local storage, ensure the file is in the correct location
+      const uploadDir = storageConfig.localPath;
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      
+      const targetPath = path.join(uploadDir, filename);
+      if (filePath !== targetPath) {
+        if (data) {
+          fs.writeFileSync(targetPath, data);
+        } else {
+          fs.copyFileSync(filePath, targetPath);
+        }
+      }
+      
+      return {
+        filename,
+        url: `/uploads/${filename}`,
+        size: fs.statSync(targetPath).size
+      };
+    }
+  }
+
+  /**
+   * Delete file from configured storage
+   */
+  static async deleteFile(filename) {
+    this.validateFilename(filename);
+    const storageConfig = this.getStorageConfig();
+    
+    if (storageConfig.type === 's3') {
+      return await S3Service.deleteFile(filename);
+    } else {
+      const uploadDir = storageConfig.localPath;
+      const filePath = path.join(uploadDir, filename);
+
+      if (!fs.existsSync(filePath)) {
+        throw new Error('File not found');
+      }
+
+      fs.unlinkSync(filePath);
+      return true;
+    }
+  }
+
+  /**
+   * Get file URL based on storage type
+   */
+  static getFileUrl(filename) {
+    const storageConfig = this.getStorageConfig();
+    
+    if (storageConfig.type === 's3') {
+      // For S3, generate a URL (this could be a signed URL if needed)
+      return S3Service.getPublicUrl(filename);
+    } else {
+      return `/uploads/${filename}`;
+    }
+  }
+
+  /**
+   * Get image processing configuration
    */
   static getImageConfig() {
     return {
       enabled: process.env.IMAGE_RESIZE === 'true',
-      maxWidth: parseInt(process.env.IMAGE_MAX_WIDTH) || 2048,
-      maxHeight: parseInt(process.env.IMAGE_MAX_HEIGHT) || 2048,
-      quality: parseInt(process.env.IMAGE_QUALITY) || 80,
       autoConvert: process.env.IMAGE_CONVERT === 'true',
-      convertFormat: process.env.IMAGE_CONVERT_FORMAT || 'jpg'
+      maxWidth: parseInt(process.env.IMAGE_MAX_WIDTH) || 1920,
+      maxHeight: parseInt(process.env.IMAGE_MAX_HEIGHT) || 1080,
+      defaultQuality: parseInt(process.env.IMAGE_QUALITY) || 80,
+      allowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'avif'],
+      maxFileSize: parseInt(process.env.MAX_FILE_SIZE) || 10 * 1024 * 1024 // 10MB
     };
   }
 
   /**
-   * Validate and limit resize dimensions
+   * Validate image dimensions
    */
   static validateDimensions(width, height) {
     const config = this.getImageConfig();
-    const maxW = config.maxWidth;
-    const maxH = config.maxHeight;
     
-    const needsResize = width > maxW || height > maxH;
+    // Ensure dimensions don't exceed maximum allowed
+    const validWidth = Math.min(width, config.maxWidth);
+    const validHeight = Math.min(height, config.maxHeight);
     
-    if (needsResize) {
-      // Calculate aspect ratio to maintain proportions
-      const aspectRatio = width / height;
-      let newWidth = width;
-      let newHeight = height;
-      
-      if (width > maxW) {
-        newWidth = maxW;
-        newHeight = Math.round(maxW / aspectRatio);
-      }
-      
-      if (newHeight > maxH) {
-        newHeight = maxH;
-        newWidth = Math.round(maxH * aspectRatio);
-      }
-      
+    // Maintain aspect ratio
+    const aspectRatio = width / height;
+    
+    if (validWidth / validHeight > aspectRatio) {
       return {
-        needsResize: true,
-        originalWidth: width,
-        originalHeight: height,
-        recommendedWidth: newWidth,
-        recommendedHeight: newHeight
+        width: Math.round(validHeight * aspectRatio),
+        height: validHeight
+      };
+    } else {
+      return {
+        width: validWidth,
+        height: Math.round(validWidth / aspectRatio)
       };
     }
-    
-    return {
-      needsResize: false,
-      originalWidth: width,
-      originalHeight: height,
-      recommendedWidth: width,
-      recommendedHeight: height
-    };
   }
 
   /**
-   * Get appropriate file extension for conversion
+   * Get file extension from mimetype
    */
-  static getConvertedExtension(fromFormat, toFormat = null) {
-    const targetFormat = toFormat || fromFormat;
-    
-    switch (targetFormat.toLowerCase()) {
-      case 'jpg':
-      case 'jpeg':
-        return '.jpg';
-      case 'webp':
-        return '.webp';
-      case 'avif':
-        return '.avif';
-      case 'png':
-        return '.png';
-      default:
-        return '.jpg';
-    }
+  static getExtensionFromMimeType(mimetype) {
+    const mimeToExt = {
+      'image/jpeg': 'jpg',
+      'image/jpg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+      'image/avif': 'avif'
+    };
+    return mimeToExt[mimetype] || 'jpg';
   }
 
   /**
-   * Process single file upload
+   * Generate unique filename
+   */
+  static generateFilename(originalName, options = {}) {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 8);
+    const ext = path.extname(originalName).toLowerCase();
+    const baseName = path.basename(originalName, ext);
+    
+    // Clean filename
+    const cleanName = baseName
+      .replace(/[^a-zA-Z0-9.-]/g, '_')
+      .substring(0, 50);
+    
+    if (options.outputFormat) {
+      const newExt = options.outputFormat === 'jpg' ? '.jpg' : `.${options.outputFormat}`;
+      return `${cleanName}_${timestamp}_${random}${newExt}`;
+    }
+    
+    return `${cleanName}_${timestamp}_${random}${ext}`;
+  }
+
+  /**
+   * Process a single file upload with image processing
    */
   static async processSingleFile(file, options = {}) {
     const config = this.getImageConfig();
-    
-    // Check if image processing is enabled
-    if (!config.enabled) {
-      return {
-        filename: file.filename,
-        originalName: file.originalname,
-        size: file.size,
-        mimetype: file.mimetype,
-        url: `/uploads/${file.filename}`,
-        processed: false
-      };
-    }
+    const storageConfig = this.getStorageConfig();
+    const { resize, quality, outputFormat } = options;
 
-    const { resize, quality, convert } = options;
+    logger.info(`Processing file: ${file.originalname}, Size: ${file.size} bytes`);
+
+    // Check if file is an image
+    const isImage = file.mimetype && file.mimetype.startsWith('image/');
+    
+    // Determine if we should process the image
+    const shouldProcess = config.enabled && isImage;
+    
     let processedFile = file;
+    let processedFilename = file.filename;
 
-    // Image processing with Sharp
-    const shouldProcess = (resize || quality || convert || config.autoConvert) && file.mimetype.startsWith('image/');
-    
     if (shouldProcess) {
-      const uploadDir = process.env.UPLOAD_PATH || 'uploads/';
-      
       // Determine output format
-      let outputFormat = convert || (config.autoConvert ? config.convertFormat : null);
-      let processedFilename = file.filename;
-      
-      if (outputFormat) {
-        const ext = this.getConvertedExtension(outputFormat);
-        const nameWithoutExt = path.parse(file.filename).name;
-        processedFilename = `${nameWithoutExt}${ext}`;
+      let finalFormat = outputFormat;
+      if (!finalFormat && config.autoConvert) {
+        finalFormat = 'webp'; // Default auto-convert format
       }
-      
-      const processedPath = path.join(uploadDir, `processed_${processedFilename}`);
-      
+
+      // Generate processed filename
+      processedFilename = this.generateFilename(file.originalname, { outputFormat: finalFormat });
+
       try {
         let sharpInstance = sharp(file.path);
 
@@ -158,8 +235,8 @@ class FileService {
         const imageQuality = quality ? parseInt(quality) : config.defaultQuality;
         
         // Apply format conversion and quality settings
-        if (outputFormat) {
-          switch (outputFormat.toLowerCase()) {
+        if (finalFormat) {
+          switch (finalFormat.toLowerCase()) {
             case 'jpg':
             case 'jpeg':
               sharpInstance = sharpInstance.jpeg({ quality: imageQuality });
@@ -175,7 +252,7 @@ class FileService {
               sharpInstance = sharpInstance.png({ quality: pngQuality });
               break;
           }
-          logger.info(`Converting to ${outputFormat.toUpperCase()} with quality ${imageQuality}`);
+          logger.info(`Converting to ${finalFormat.toUpperCase()} with quality ${imageQuality}`);
         } else {
           // Apply quality to original format
           if (file.mimetype === 'image/jpeg') {
@@ -191,70 +268,107 @@ class FileService {
           }
         }
 
-        // Process the image
-        await sharpInstance.toFile(processedPath);
+        // Process the image to buffer
+        const processedBuffer = await sharpInstance.toBuffer();
 
-        // Get stats of processed file
-        const stats = fs.statSync(processedPath);
+        // Save processed file to storage
+        const saveResult = await this.saveFile(file.path, processedFilename, processedBuffer);
 
-        // Remove original file and use processed one
-        fs.unlinkSync(file.path);
-        const finalPath = path.join(uploadDir, processedFilename);
-        fs.renameSync(processedPath, finalPath);
+        // Clean up original temporary file
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
 
         // Update file info
         processedFile = {
           ...file,
           filename: processedFilename,
-          path: finalPath,
-          size: stats.size,
-          mimetype: outputFormat ? `image/${outputFormat === 'jpg' ? 'jpeg' : outputFormat}` : file.mimetype
+          size: processedBuffer.length,
+          mimetype: finalFormat ? `image/${finalFormat === 'jpg' ? 'jpeg' : finalFormat}` : file.mimetype
         };
 
         logger.info(`Image processed successfully: ${file.originalname} -> ${processedFilename}`);
+
+        return {
+          filename: processedFile.filename,
+          originalName: processedFile.originalname,
+          size: processedFile.size,
+          mimetype: processedFile.mimetype,
+          url: saveResult.url || this.getFileUrl(processedFile.filename),
+          processed: true,
+          storage: storageConfig.type,
+          s3Key: storageConfig.type === 's3' ? saveResult.key : undefined
+        };
+
       } catch (error) {
         logger.error('Image processing error:', error);
-        // If processing fails, use original file
-        if (fs.existsSync(processedPath)) {
-          fs.unlinkSync(processedPath);
+        // If processing fails, save original file
+        const saveResult = await this.saveFile(file.path, file.filename);
+        
+        // Clean up original temporary file
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
         }
-      }
-    }
 
-    return {
-      filename: processedFile.filename,
-      originalName: processedFile.originalname,
-      size: processedFile.size,
-      mimetype: processedFile.mimetype,
-      url: `/uploads/${processedFile.filename}`,
-      processed: shouldProcess && processedFile !== file
-    };
+        return {
+          filename: file.filename,
+          originalName: file.originalname,
+          size: file.size,
+          mimetype: file.mimetype,
+          url: saveResult.url || this.getFileUrl(file.filename),
+          processed: false,
+          storage: storageConfig.type,
+          error: 'Processing failed, original file saved',
+          s3Key: storageConfig.type === 's3' ? saveResult.key : undefined
+        };
+      }
+    } else {
+      // No processing needed, just save the file
+      const saveResult = await this.saveFile(file.path, file.filename);
+      
+      // Clean up original temporary file
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
+
+      return {
+        filename: file.filename,
+        originalName: file.originalname,
+        size: file.size,
+        mimetype: file.mimetype,
+        url: saveResult.url || this.getFileUrl(file.filename),
+        processed: false,
+        storage: storageConfig.type,
+        s3Key: storageConfig.type === 's3' ? saveResult.key : undefined
+      };
+    }
   }
 
   /**
    * Process multiple file uploads
    */
   static async processMultipleFiles(files, options = {}) {
-    const config = this.getImageConfig();
-    
-    // If image processing is disabled, return files as-is
-    if (!config.enabled) {
-      return files.map(file => ({
-        filename: file.filename,
-        originalName: file.originalname,
-        size: file.size,
-        mimetype: file.mimetype,
-        url: `/uploads/${file.filename}`,
-        processed: false
-      }));
-    }
-
     const processedFiles = [];
 
     for (const file of files) {
-      // Process each file individually using the same logic
-      const processedFile = await this.processSingleFile(file, options);
-      processedFiles.push(processedFile);
+      try {
+        const processedFile = await this.processSingleFile(file, options);
+        processedFiles.push(processedFile);
+      } catch (error) {
+        logger.error(`Failed to process file ${file.originalname}:`, error);
+        
+        // Clean up file on error
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+        
+        processedFiles.push({
+          filename: file.filename,
+          originalName: file.originalname,
+          error: error.message,
+          processed: false
+        });
+      }
     }
 
     return processedFiles;
@@ -271,68 +385,95 @@ class FileService {
   }
 
   /**
-   * Delete file from filesystem
-   */
-  static async deleteFile(filename) {
-    this.validateFilename(filename);
-
-    const uploadDir = process.env.UPLOAD_PATH || 'uploads/';
-    const filePath = path.join(uploadDir, filename);
-
-    if (!fs.existsSync(filePath)) {
-      throw new Error('File not found');
-    }
-
-    fs.unlinkSync(filePath);
-    return true;
-  }
-
-  /**
    * Get file information
    */
   static async getFileInfo(filename) {
     this.validateFilename(filename);
+    const storageConfig = this.getStorageConfig();
 
-    const uploadDir = process.env.UPLOAD_PATH || 'uploads/';
-    const filePath = path.join(uploadDir, filename);
+    if (storageConfig.type === 's3') {
+      // For S3, get file info from S3
+      try {
+        const fileInfo = await S3Service.getFileInfo(filename);
+        return {
+          filename,
+          size: fileInfo.size,
+          created: fileInfo.lastModified,
+          modified: fileInfo.lastModified,
+          url: this.getFileUrl(filename),
+          storage: 's3',
+          etag: fileInfo.etag
+        };
+      } catch (error) {
+        throw new Error('File not found');
+      }
+    } else {
+      // For local storage
+      const uploadDir = storageConfig.localPath;
+      const filePath = path.join(uploadDir, filename);
 
-    if (!fs.existsSync(filePath)) {
-      throw new Error('File not found');
+      if (!fs.existsSync(filePath)) {
+        throw new Error('File not found');
+      }
+
+      const stats = fs.statSync(filePath);
+      return {
+        filename,
+        size: stats.size,
+        created: stats.birthtime,
+        modified: stats.mtime,
+        url: this.getFileUrl(filename),
+        storage: 'local'
+      };
     }
-
-    const stats = fs.statSync(filePath);
-    return {
-      filename,
-      size: stats.size,
-      created: stats.birthtime,
-      modified: stats.mtime,
-      url: `/uploads/${filename}`
-    };
   }
 
   /**
-   * List all files in upload directory
+   * List all files in upload storage
    */
   static async listAllFiles() {
-    const uploadDir = process.env.UPLOAD_PATH || 'uploads/';
-    
-    if (!fs.existsSync(uploadDir)) {
-      return [];
-    }
+    const storageConfig = this.getStorageConfig();
 
-    return fs.readdirSync(uploadDir)
-      .filter(file => fs.statSync(path.join(uploadDir, file)).isFile())
-      .map(filename => {
-        const stats = fs.statSync(path.join(uploadDir, filename));
-        return {
-          filename,
-          size: stats.size,
-          created: stats.birthtime,
-          modified: stats.mtime,
-          url: `/uploads/${filename}`
-        };
-      })
-      .sort((a, b) => new Date(b.created) - new Date(a.created));
+    if (storageConfig.type === 's3') {
+      // For S3, list files from S3
+      try {
+        const s3Files = await S3Service.listFiles();
+        return s3Files.map(file => ({
+          filename: file.key,
+          size: file.size,
+          created: file.lastModified,
+          modified: file.lastModified,
+          url: this.getFileUrl(file.key),
+          storage: 's3',
+          etag: file.etag
+        })).sort((a, b) => new Date(b.created) - new Date(a.created));
+      } catch (error) {
+        logger.error('Failed to list S3 files:', error);
+        return [];
+      }
+    } else {
+      // For local storage
+      const uploadDir = storageConfig.localPath;
+      
+      if (!fs.existsSync(uploadDir)) {
+        return [];
+      }
+
+      return fs.readdirSync(uploadDir)
+        .filter(file => fs.statSync(path.join(uploadDir, file)).isFile())
+        .map(filename => {
+          const stats = fs.statSync(path.join(uploadDir, filename));
+          return {
+            filename,
+            size: stats.size,
+            created: stats.birthtime,
+            modified: stats.mtime,
+            url: this.getFileUrl(filename),
+            storage: 'local'
+          };
+        })
+        .sort((a, b) => new Date(b.created) - new Date(a.created));
+    }
   }
 
   /**
@@ -352,6 +493,28 @@ class FileService {
         }
       }
     });
+  }
+
+  /**
+   * Download file from S3 (if using S3 storage)
+   */
+  static async downloadFile(filename) {
+    this.validateFilename(filename);
+    const storageConfig = this.getStorageConfig();
+
+    if (storageConfig.type === 's3') {
+      return await S3Service.getFile(filename);
+    } else {
+      // For local storage, read file directly
+      const uploadDir = storageConfig.localPath;
+      const filePath = path.join(uploadDir, filename);
+
+      if (!fs.existsSync(filePath)) {
+        throw new Error('File not found');
+      }
+
+      return fs.readFileSync(filePath);
+    }
   }
 }
 
