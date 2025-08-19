@@ -10,6 +10,7 @@ A comprehensive Express.js API template with modern features including authentic
 - **Authentication** - JWT-based authentication system
 - **File Upload Support** - Dual storage system supporting both local storage and S3-compatible object storage (AWS S3, MinIO, DigitalOcean Spaces) with advanced image processing
 - **Image Processing** - Automatic resize, format conversion (JPG, WebP, AVIF, PNG), quality optimization with environment-based configuration
+- **Redis Integration** - Optional Redis support for caching, session management, rate limiting, and background job processing
 - **Database Migrations** - Full migration and seeding support
 - **Auto-generated Documentation** - Swagger/OpenAPI 3.0 documentation
 - **Input Validation** - Request validation with Joi
@@ -240,7 +241,66 @@ DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```
 
-## 🔐 Authentication
+## � Redis Configuration (Optional)
+
+Redis is included in Docker Compose setups for enhanced performance and scalability features. While the API works perfectly without Redis, it provides additional capabilities when available.
+
+### 🚀 Redis Use Cases
+
+#### **1. 🏪 Caching & Performance**
+- **API Response Caching**: Cache expensive database queries and computed results
+- **User Session Storage**: Enhanced session management for better performance
+- **File Metadata Caching**: Cache file information for faster retrieval
+
+#### **2. 🔒 Enhanced Security**
+- **JWT Token Blacklist**: Store invalidated tokens for secure logout functionality
+- **Rate Limiting Storage**: Persistent rate limiting across server restarts
+- **IP Tracking**: Advanced request monitoring and abuse prevention
+
+#### **3. 📧 Background Processing**
+- **Email Queue**: Queue email sending jobs for better reliability
+- **Job Processing**: Background task management and retry mechanisms
+- **Notification System**: Real-time notification delivery
+
+#### **4. 📊 Real-time Features**
+- **WebSocket Management**: Connection state management for real-time features
+- **Live Updates**: Push notifications and live data updates
+- **Messaging**: Chat and messaging capabilities
+
+### 🔧 Redis Configuration
+
+**Docker Compose** (Included):
+```yaml
+redis:
+  image: redis:7-alpine
+  ports:
+    - "6379:6379"
+```
+
+**Environment Variables** (Optional):
+```env
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=your_redis_password
+REDIS_DB=0
+```
+
+### 💡 Current Status
+- **Status**: Ready-to-use infrastructure included in Docker setups
+- **Implementation**: Currently optional - API works without Redis
+- **Future**: Easy to implement Redis features as needed
+- **Benefits**: Significant performance gains in production environments
+
+### 🎯 Quick Setup
+```bash
+# Start with Redis (Docker Compose)
+docker-compose -f docker-compose.nodejs.yml up -d
+
+# Redis will be available at localhost:6379
+# No additional configuration needed
+```
+
+## �🔐 Authentication
 
 The API uses JWT-based authentication. Default users (created by seeder):
 
