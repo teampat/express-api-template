@@ -369,39 +369,63 @@ S3_FORCE_PATH_STYLE=false           # Use path-style URLs
 ## 📁 Project Structure
 
 ```
-src/
-├── config/             # Configuration files
-│   ├── database.js     # Database configuration
-│   ├── logger.js       # Winston logger setup
-│   └── swagger.js      # Swagger/OpenAPI configuration
-├── middleware/         # Express middleware
-│   ├── auth.js         # JWT authentication middleware
-│   ├── errorHandler.js # Global error handling
-│   ├── rateLimiter.js  # Rate limiting configuration
-│   └── validate.js     # Request validation middleware
-├── models/             # Sequelize models
-│   ├── User.js         # User model definition
-│   └── index.js        # Model initialization and associations
-├── controllers/        # Request handlers
-│   ├── authController.js    # Authentication endpoints
-│   ├── userController.js    # User management endpoints
-│   └── uploadController.js  # File upload endpoints
-├── routes/             # Express routes
-│   ├── auth.js         # Authentication endpoints
-│   ├── users.js        # User management endpoints
-│   └── upload.js       # File upload endpoints
-├── services/           # Business logic services
-│   ├── authService.js  # Authentication business logic
-│   ├── userService.js  # User management business logic
-│   ├── fileService.js  # File upload and processing service
-│   ├── s3Service.js    # S3-compatible storage service
-│   └── emailService.js # Email sending service
-├── validators/         # Joi validation schemas
-│   └── authValidator.js # Authentication request validators
-├── migrations/         # Database migrations
-├── seeders/           # Database seeders
-├── templates/         # Email templates
-└── server.js          # Application entry point
+express-api-template/
+├── .github/                    # GitHub specific files
+│   └── copilot-instructions.md # GitHub Copilot instructions
+├── coverage/                   # Test coverage reports
+├── docs/                       # Documentation files
+├── logs/                       # Application logs
+├── src/                        # Source code
+│   ├── config/                 # Configuration files
+│   │   ├── database.js         # Database configuration
+│   │   ├── logger.js           # Winston logger setup
+│   │   └── swagger.js          # Swagger/OpenAPI configuration
+│   ├── controllers/            # Request handlers
+│   │   ├── authController.js   # Authentication endpoints
+│   │   ├── uploadController.js # File upload endpoints
+│   │   └── userController.js   # User management endpoints
+│   ├── middleware/             # Express middleware
+│   │   ├── auth.js             # JWT authentication middleware
+│   │   ├── errorHandler.js     # Global error handling
+│   │   ├── rateLimiter.js      # Rate limiting configuration
+│   │   └── validate.js         # Request validation middleware
+│   ├── migrations/             # Database migrations
+│   ├── models/                 # Sequelize models
+│   │   ├── User.js             # User model definition
+│   │   └── index.js            # Model initialization and associations
+│   ├── routes/                 # Express routes
+│   │   ├── auth.js             # Authentication routes
+│   │   ├── upload.js           # File upload routes
+│   │   └── users.js            # User management routes
+│   ├── seeders/                # Database seeders
+│   ├── services/               # Business logic services
+│   │   ├── authService.js      # Authentication business logic
+│   │   ├── emailService.js     # Email sending service
+│   │   ├── fileService.js      # File upload and processing service
+│   │   ├── s3Service.js        # S3-compatible storage service
+│   │   └── userService.js      # User management business logic
+│   ├── templates/              # Email templates
+│   ├── validators/             # Joi validation schemas
+│   │   └── authValidator.js    # Authentication request validators
+│   └── server.js               # Application entry point
+├── tests/                      # Unit tests
+│   ├── authMiddleware.test.js  # Authentication middleware tests
+│   ├── authService.test.js     # Authentication service tests
+│   ├── authValidator.test.js   # Authentication validator tests
+│   ├── errorHandler.test.js    # Error handler tests
+│   ├── fileService.test.js     # File service tests
+│   └── userService.test.js     # User service tests
+├── uploads/                    # Local file storage (when using local storage)
+├── .env                        # Environment variables (not in repo)
+├── .env.example                # Environment variables example
+├── .gitignore                  # Git ignore file
+├── .sequelizerc                # Sequelize configuration
+├── database.sqlite             # SQLite database file (when using SQLite)
+├── DUAL_STORAGE_SUMMARY.md     # Dual storage system documentation
+├── GETTING_STARTED.md          # Getting started guide
+├── package.json                # NPM dependencies and scripts
+├── PROJECT_SUMMARY.md          # Project summary documentation
+└── README.md                   # This file
 ```
 
 ## 🚀 Production Deployment
