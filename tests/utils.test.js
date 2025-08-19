@@ -10,8 +10,36 @@ const {
   formatDateTime,
   getDaysDifference,
   addDays,
+  subtractDays,
+  addTime,
+  subtractTime,
   isToday,
+  isYesterday,
+  isTomorrow,
+  isPast,
+  isFuture,
   isValidDate,
+  getRelativeTime,
+  getRelativeTimeTo,
+  startOfDay,
+  endOfDay,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
+  isSame,
+  isBefore,
+  isAfter,
+  isBetween,
+  parseDate,
+  toTimezone,
+  getTimezoneOffset,
+  getAge,
+  getWeekdayName,
+  getMonthName,
+  getBusinessDays,
   
   // String utils
   capitalize,
@@ -82,6 +110,19 @@ describe('Utils Test Suite', () => {
       expect(result).toContain('January');
     });
 
+    test('formatDate should accept custom format', () => {
+      const date = new Date('2023-01-15');
+      const result = formatDate(date, 'YYYY-MM-DD');
+      expect(result).toBe('2023-01-15');
+    });
+
+    test('formatDateTime should format date and time', () => {
+      const date = new Date('2023-01-01T15:30:00.000Z');
+      const result = formatDateTime(date);
+      expect(result).toContain('2023');
+      expect(result).toContain('Jan');
+    });
+
     test('getDaysDifference should calculate days between dates', () => {
       const date1 = new Date('2023-01-01');
       const date2 = new Date('2023-01-05');
@@ -94,6 +135,18 @@ describe('Utils Test Suite', () => {
       expect(result.getDate()).toBe(6);
     });
 
+    test('subtractDays should subtract days from date', () => {
+      const date = new Date('2023-01-06');
+      const result = subtractDays(date, 5);
+      expect(result.getDate()).toBe(1);
+    });
+
+    test('addTime should add time with different units', () => {
+      const date = new Date('2023-01-01T12:00:00');
+      const result = addTime(date, 2, 'hour');
+      expect(result.getHours()).toBe(14);
+    });
+
     test('isToday should check if date is today', () => {
       const today = new Date();
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -101,10 +154,105 @@ describe('Utils Test Suite', () => {
       expect(isToday(yesterday)).toBe(false);
     });
 
+    test('isYesterday should check if date is yesterday', () => {
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const today = new Date();
+      expect(isYesterday(yesterday)).toBe(true);
+      expect(isYesterday(today)).toBe(false);
+    });
+
+    test('isTomorrow should check if date is tomorrow', () => {
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      const today = new Date();
+      expect(isTomorrow(tomorrow)).toBe(true);
+      expect(isTomorrow(today)).toBe(false);
+    });
+
+    test('isPast should check if date is in the past', () => {
+      const pastDate = new Date('2020-01-01');
+      const futureDate = new Date('2030-01-01');
+      expect(isPast(pastDate)).toBe(true);
+      expect(isPast(futureDate)).toBe(false);
+    });
+
+    test('isFuture should check if date is in the future', () => {
+      const pastDate = new Date('2020-01-01');
+      const futureDate = new Date('2030-01-01');
+      expect(isFuture(futureDate)).toBe(true);
+      expect(isFuture(pastDate)).toBe(false);
+    });
+
     test('isValidDate should validate date objects', () => {
       expect(isValidDate(new Date())).toBe(true);
-      expect(isValidDate(new Date('invalid'))).toBe(false);
-      expect(isValidDate('not a date')).toBe(false);
+      expect(isValidDate('2023-01-01')).toBe(true);
+      expect(isValidDate('invalid-date')).toBe(false);
+    });
+
+    test('getRelativeTime should return relative time', () => {
+      const pastDate = new Date(Date.now() - 2 * 60 * 60 * 1000); // 2 hours ago
+      const result = getRelativeTime(pastDate);
+      expect(result).toContain('ago');
+    });
+
+    test('startOfDay should return start of day', () => {
+      const date = new Date('2023-01-01T15:30:45');
+      const result = startOfDay(date);
+      expect(result.getHours()).toBe(0);
+      expect(result.getMinutes()).toBe(0);
+      expect(result.getSeconds()).toBe(0);
+    });
+
+    test('endOfDay should return end of day', () => {
+      const date = new Date('2023-01-01T15:30:45');
+      const result = endOfDay(date);
+      expect(result.getHours()).toBe(23);
+      expect(result.getMinutes()).toBe(59);
+      expect(result.getSeconds()).toBe(59);
+    });
+
+    test('isSame should compare dates with different units', () => {
+      const date1 = new Date('2023-01-01T10:00:00');
+      const date2 = new Date('2023-01-01T15:00:00');
+      expect(isSame(date1, date2, 'day')).toBe(true);
+      expect(isSame(date1, date2, 'hour')).toBe(false);
+    });
+
+    test('isBetween should check if date is between range', () => {
+      const date = new Date('2023-01-15');
+      const start = new Date('2023-01-01');
+      const end = new Date('2023-01-31');
+      expect(isBetween(date, start, end)).toBe(true);
+    });
+
+    test('parseDate should parse date with custom format', () => {
+      const result = parseDate('15/01/2023', 'DD/MM/YYYY');
+      expect(result.getFullYear()).toBe(2023);
+      expect(result.getMonth()).toBe(0); // January is 0
+      expect(result.getDate()).toBe(15);
+    });
+
+    test('getAge should calculate age from birthdate', () => {
+      const birthdate = new Date();
+      birthdate.setFullYear(birthdate.getFullYear() - 25);
+      const age = getAge(birthdate);
+      expect(age).toBe(25);
+    });
+
+    test('getWeekdayName should return weekday name', () => {
+      const monday = new Date('2023-01-02'); // Monday
+      expect(getWeekdayName(monday)).toBe('Monday');
+    });
+
+    test('getMonthName should return month name', () => {
+      const january = new Date('2023-01-01');
+      expect(getMonthName(january)).toBe('January');
+    });
+
+    test('getBusinessDays should calculate business days', () => {
+      const start = new Date('2023-01-02'); // Monday
+      const end = new Date('2023-01-06'); // Friday
+      const businessDays = getBusinessDays(start, end);
+      expect(businessDays).toBe(5); // Mon, Tue, Wed, Thu, Fri
     });
   });
 

@@ -38,12 +38,14 @@ bun run examples
 ```
 
 This will demonstrate:
-- Date formatting and calculations
-- String transformations and validation
-- Data validation and sanitization
-- Cryptographic operations
-- Standardized API responses
-- File operations and validation
+- **Enhanced date formatting and calculations** with dayjs
+- **Advanced date comparisons and ranges** 
+- **Timezone support and business day calculations**
+- **String transformations and validation**
+- **Data validation and sanitization** 
+- **Cryptographic operations**
+- **Standardized API responses**
+- **File operations and validation**
 
 ## 🔒 Security Features
 
@@ -53,13 +55,16 @@ This will demonstrate:
 - **Input Validation** - Joi validation schemas
 - **JWT Authentication** - Secure token-based auth
 - **Password Hashing** - bcrypt with salt rounds
-- **SQL Injection Protection** - Sequelize ORM storage and S3-compatible object storage (AWS S3, MinIO, DigitalOcean Spaces) with advanced image processing
+- **SQL Injection Protection** - Sequelize ORM
+- **Date/Time Operations** - Enhanced date utilities powered by dayjs
+- **File Storage** - Dual storage system: local storage and S3-compatible object storage (AWS S3, MinIO, DigitalOcean Spaces) with advanced image processing
 - **Image Processing** - Automatic resize, format conversion (JPG, WebP, AVIF, PNG), quality optimization with environment-based configuration
 - **Redis Integration** - Optional Redis support for caching, session management, rate limiting, and background job processing
 - **Database Migrations** - Full migration and seeding support
 - **Auto-generated Documentation** - Swagger/OpenAPI 3.0 documentation
 - **Input Validation** - Request validation with Joi
 - **Unit Testing** - Comprehensive test suite with Jest
+- **Utility Functions** - Comprehensive utils library for dates, strings, validation, crypto, responses, and files
 - **Security** - Security best practices with Helmet, CORS, Rate limiting
 - **Error Handling** - Centralized error handling
 - **Code Organization** - Clean architecture with separation of concerns
@@ -544,17 +549,37 @@ Email templates are located in `src/templates/`.
 
 The API includes a comprehensive set of utility functions in `src/utils/` to help with common operations:
 
-### 📅 Date Utils
+### 📅 Date Utils (Powered by dayjs)
 ```javascript
-const { formatToISO, formatDate, addDays, isToday } = require('./src/utils');
+const { formatToISO, formatDate, addDays, isToday, getRelativeTime } = require('./src/utils');
 
-// Format dates
+// Format dates with flexible options
 formatToISO(new Date()); // "2023-12-25T10:30:00.000Z"
 formatDate(new Date()); // "December 25, 2023"
+formatDate(new Date(), 'YYYY-MM-DD'); // "2023-12-25"
+formatDateTime(new Date(), 'MMM D, YYYY [at] h:mm A'); // "Dec 25, 2023 at 10:30 AM"
 
-// Date calculations
+// Advanced date calculations
 addDays(new Date(), 7); // Add 7 days
+subtractDays(new Date(), 3); // Subtract 3 days
+addTime(new Date(), 2, 'hour'); // Add 2 hours
+getRelativeTime(pastDate); // "2 hours ago"
+
+// Date comparisons and checks
 isToday(someDate); // Check if date is today
+isYesterday(someDate); // Check if date is yesterday
+isFuture(someDate); // Check if date is in future
+isBetween(date, startDate, endDate); // Check if date is in range
+
+// Date ranges and business logic
+startOfDay(new Date()); // Start of current day
+endOfMonth(new Date()); // End of current month
+getBusinessDays(startDate, endDate); // Count business days
+getAge(birthdate); // Calculate age from birthdate
+
+// Parsing and timezone support
+parseDate('15/12/2023', 'DD/MM/YYYY'); // Parse with custom format
+toTimezone(new Date(), 'America/New_York'); // Convert to timezone
 ```
 
 ### 🔤 String Utils
@@ -726,8 +751,8 @@ express-api-template/
 ### Key Directories
 
 - **`src/`** - Main application source code
-- **`src/utils/`** - Comprehensive utility functions library
-- **`tests/`** - Comprehensive unit test suite (150+ tests)
+- **`src/utils/`** - Comprehensive utility functions library with dayjs integration
+- **`tests/`** - Comprehensive unit test suite (168+ tests)
 - **`examples/`** - Usage examples and demonstrations
 - **`uploads/`** - Local file storage directory
 - **Docker files** - Multiple deployment configurations (Node.js, Bun)
