@@ -11,7 +11,7 @@ services:
     environment:
       - NODE_ENV=production
       - DB_DIALECT=mysql
-      - DB_HOST=mysql
+      - DB_HOST=mariadb
       - DB_PORT=3306
       - DB_NAME=express_api
       - DB_USERNAME=root
@@ -26,7 +26,7 @@ services:
       - uploads:/app/uploads
       - logs:/app/logs
     depends_on:
-      mysql:
+      mariadb:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
@@ -38,20 +38,20 @@ services:
     networks:
       - app-network
 
-  # MySQL Database
-  mysql:
-    image: mysql:8.0
+  # MariaDB Database
+  mariadb:
+    image: mariadb:11
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: express_api
-      MYSQL_USER: api_user
-      MYSQL_PASSWORD: api_password
+      MARIADB_ROOT_PASSWORD: rootpassword
+      MARIADB_DATABASE: express_api
+      MARIADB_USER: api_user
+      MARIADB_PASSWORD: api_password
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       timeout: 20s
       retries: 10
     restart: unless-stopped
@@ -96,7 +96,7 @@ services:
       - app-network
 
 volumes:
-  mysql_data:
+  mariadb_data:
   redis_data:
   minio_data:
   uploads:

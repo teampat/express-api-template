@@ -63,7 +63,7 @@ Create a `.env` file for production deployments:
 ```env
 # Database
 DB_DIALECT=mysql
-DB_HOST=mysql
+DB_HOST=mariadb
 DB_PORT=3306
 DB_NAME=express_api
 DB_USERNAME=root
@@ -96,7 +96,7 @@ S3_FORCE_PATH_STYLE=true
 
 ### Core Services
 - **API**: Express.js application (Node.js or Bun)
-- **MySQL**: Database server
+- **MariaDB**: Database server
 - **Redis**: Caching (optional)
 
 ### Development/Testing Services
@@ -107,7 +107,7 @@ S3_FORCE_PATH_STYLE=true
 
 Health checks are configured in Docker Compose (not in Dockerfiles):
 - **API**: HTTP check on `/health` endpoint using curl
-- **MySQL**: mysqladmin ping
+- **MariaDB**: mariadb-admin ping
 - **Redis**: redis-cli ping
 
 The API health check waits 40 seconds for startup and then checks every 30 seconds.
@@ -157,6 +157,6 @@ docker-compose -f docker-compose.bun.yml exec api sh
 - **Node.js**: Traditional, stable, wide ecosystem support
 - **Bun**: Faster performance, smaller image size, newer technology
 - **Development**: Uses SQLite for simplicity, includes hot reload
-- **Production**: Uses MySQL for better performance and reliability
+- **Production**: Uses MariaDB for better performance and reliability
 
 Choose the configuration that best fits your deployment needs!

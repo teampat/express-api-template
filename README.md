@@ -5,7 +5,7 @@ A comprehensive Express.js API template with modern features including authentic
 ## 🚀 Features
 
 - **Express.js v5** - Latest version of Express.js with native async/await support
-- **Database Support** - SQLite (default), MySQL and PostgreSQL with Sequelize ORM
+- **Database Support** - SQLite (default), MySQL/MariaDB and PostgreSQL with Sequelize ORM
 - **Zero Database Setup** - Uses SQLite by default for immediate development
 - **Authentication** - JWT-based authentication system
 - **File Upload Support** - Dual storage system supporting both local storage and S3-compatible object storage (AWS S3, MinIO, DigitalOcean Spaces) with advanced image processing
@@ -192,7 +192,7 @@ bun run seed
 ```
 
 ### Note on Database Drivers
-All database drivers (SQLite, MySQL, PostgreSQL) work seamlessly with Bun thanks to its Node.js compatibility layer.
+All database drivers (SQLite, MySQL/MariaDB, PostgreSQL) work seamlessly with Bun thanks to its Node.js compatibility layer.
 
 ## 📚 API Documentation
 
@@ -207,7 +207,7 @@ The API documentation is automatically generated using Swagger/OpenAPI 3.0 and i
 
 No additional configuration needed. The database file will be created automatically.
 
-### MySQL
+### MySQL/MariaDB
 
 Update your `.env` file:
 
