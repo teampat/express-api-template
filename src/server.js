@@ -15,6 +15,7 @@ const errorHandler = require('./middleware/errorHandler');
 const swaggerOptions = require('./config/swagger');
 
 // Import routes
+const healthRoutes = require('./routes/health');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const uploadRoutes = require('./routes/upload');
@@ -47,18 +48,10 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 if (process.env.NODE_ENV !== 'production') {
   const specs = swaggerJsdoc(swaggerOptions);
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-  logger.info(`API Documentation: http://localhost:${PORT}/api-docs`);
 }
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV
-  });
-});
+// System routes (root and health check)
+app.use('/', healthRoutes);
 
 // Create API v1 router
 const apiV1Router = express.Router();
@@ -90,20 +83,20 @@ async function startServer() {
   try {
     // Test database connection
     await sequelize.authenticate();
-    logger.info('Database connection established successfully');
+    console.info('Database connection established successfully');
 
     // Sync database (in development)
     if (process.env.NODE_ENV === 'development') {
       await sequelize.sync({ alter: true });
-      logger.info('Database synchronized');
+      console.info('Database synchronized');
     }
 
     // Start server
     app.listen(PORT, () => {
-      logger.info(`Server running on port ${PORT}`);
-      logger.info(`Environment: ${process.env.NODE_ENV}`);
+      console.info(`Server running on port ${PORT}`);
+      console.info(`Environment: ${process.env.NODE_ENV}`);
       if (process.env.NODE_ENV !== 'production') {
-        logger.info(`API Documentation: http://localhost:${PORT}/api-docs`);
+        console.info(`API Documentation: http://localhost:${PORT}/api-docs`);
       }
     });
   } catch (error) {

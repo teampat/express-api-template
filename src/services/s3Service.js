@@ -17,8 +17,7 @@ class S3Service {
    * Initialize S3 client with configuration
    */
   initializeClient() {
-    if (!process.env.S3_ENDPOINT || !process.env.S3_BUCKET) {
-      logger.warn('S3 configuration incomplete. S3 features will be disabled.');
+    if (!process.env.S3_ENDPOINT || !process.env.S3_BUCKET || process.env.UPLOAD_STORAGE !== 's3') {
       return;
     }
 

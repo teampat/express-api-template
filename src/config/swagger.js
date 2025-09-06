@@ -24,6 +24,24 @@ const swaggerOptions = {
         description: 'Development server - Base URL'
       }
     ],
+    tags: [
+      {
+        name: 'System',
+        description: 'System health and information endpoints'
+      },
+      {
+        name: 'Authentication',
+        description: 'User authentication and authorization'
+      },
+      {
+        name: 'Users',
+        description: 'User management operations'
+      },
+      {
+        name: 'Upload',
+        description: 'File upload operations'
+      }
+    ],
     components: {
       securitySchemes: {
         bearerAuth: {
