@@ -20,8 +20,14 @@ const config = {
   },
   test: {
     dialect: 'sqlite',
-    storage: ':memory:',
-    logging: false
+    storage: process.env.DB_STORAGE || './test.sqlite',
+    logging: false,
+    pool: {
+      max: 1,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    }
   },
   production: {
     dialect: process.env.DB_DIALECT || 'postgres',
