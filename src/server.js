@@ -60,10 +60,16 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/upload', uploadRoutes);
+// Create API v1 router
+const apiV1Router = express.Router();
+
+// API v1 routes
+apiV1Router.use('/auth', authRoutes);
+apiV1Router.use('/users', userRoutes);
+apiV1Router.use('/upload', uploadRoutes);
+
+// Mount API v1 router
+app.use('/api/v1', apiV1Router);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));

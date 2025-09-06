@@ -53,7 +53,7 @@ const upload = multer({
 
 /**
  * @swagger
- * /api/upload/single:
+ * /upload/single:
  *   post:
  *     summary: Upload a single file
  *     tags: [Upload]
@@ -112,7 +112,7 @@ router.post('/single', authenticate, upload.single('file'), UploadController.upl
 
 /**
  * @swagger
- * /api/upload/multiple:
+ * /upload/multiple:
  *   post:
  *     summary: Upload multiple files
  *     tags: [Upload]
@@ -173,7 +173,7 @@ router.post('/multiple', authenticate, upload.array('files', 5), UploadControlle
 
 /**
  * @swagger
- * /api/upload/{filename}:
+ * /upload/{filename}:
  *   delete:
  *     summary: Delete an uploaded file
  *     tags: [Upload]
@@ -196,7 +196,7 @@ router.delete('/:filename', authenticate, UploadController.deleteFile);
 
 /**
  * @swagger
- * /api/upload/info/{filename}:
+ * /upload/info/{filename}:
  *   get:
  *     summary: Get file information
  *     tags: [Upload]
@@ -219,7 +219,7 @@ router.get('/info/:filename', authenticate, UploadController.getFileInfo);
 
 /**
  * @swagger
- * /api/upload/list:
+ * /upload/list:
  *   get:
  *     summary: List all uploaded files
  *     tags: [Upload]
@@ -233,7 +233,7 @@ router.get('/list', authenticate, UploadController.listFiles);
 
 /**
  * @swagger
- * /api/upload/download/{filename}:
+ * /upload/download/{filename}:
  *   get:
  *     summary: Download a file
  *     tags: [Upload]
@@ -256,7 +256,7 @@ router.get('/download/:filename', authenticate, UploadController.downloadFile);
 
 /**
  * @swagger
- * /api/upload/storage/status:
+ * /upload/storage/status:
  *   get:
  *     summary: Get current storage configuration status
  *     tags: [Upload]

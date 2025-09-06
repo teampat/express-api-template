@@ -15,7 +15,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/me:
+ * /users/profile:
  *   get:
  *     summary: Get current user profile
  *     tags: [Users]
@@ -49,11 +49,11 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/me', authenticate, UserController.getCurrentUser);
+router.get('/profile', authenticate, UserController.getUserProfile);
 
 /**
  * @swagger
- * /api/users:
+ * /users:
  *   get:
  *     summary: Get all users (Admin only)
  *     tags: [Users]
@@ -143,7 +143,7 @@ router.get('/', authenticate, authorize('admin'), UserController.getAllUsers);
 
 /**
  * @swagger
- * /api/users/me/change-password:
+ * /users/profile/change-password:
  *   put:
  *     summary: Change current user password
  *     tags: [Users]
@@ -207,11 +207,69 @@ router.get('/', authenticate, authorize('admin'), UserController.getAllUsers);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/me/change-password', authenticate, validate(changePasswordSchema), UserController.changePassword);
+router.put('/profile/change-password', authenticate, validate(changePasswordSchema), UserController.changePassword);
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /users/profile:
+ *   put:
+ *     summary: Update current user profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateUserRequest'
+ *           examples:
+ *             updateProfile:
+ *               summary: Update user profile
+ *               value:
+ *                 firstName: "John"
+ *                 lastName: "Doe"
+ *                 email: "john.doe@example.com"
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserUpdateResponse'
+ *             examples:
+ *               success:
+ *                 summary: Successful update
+ *                 value:
+ *                   success: true
+ *                   message: "Profile updated successfully"
+ *                   data:
+ *                     id: 1
+ *                     email: "john.doe@example.com"
+ *                     firstName: "John"
+ *                     lastName: "Doe"
+ *                     role: "user"
+ *                     isActive: true
+ *                     createdAt: "2025-01-01T00:00:00.000Z"
+ *                     updatedAt: "2025-01-01T12:00:00.000Z"
+ *       400:
+ *         description: Bad request - Email already taken or validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.put('/profile', authenticate, validate(updateProfileSchema), UserController.updateProfile);
+
+/**
+ * @swagger
+ * /users/{id}:
  *   get:
  *     summary: Get user by ID
  *     tags: [Users]
@@ -268,7 +326,7 @@ router.get('/:id', authenticate, UserController.getUserById);
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /users/{id}:
  *   put:
  *     summary: Update user
  *     tags: [Users]
@@ -345,7 +403,7 @@ router.put('/:id', authenticate, validate(updateProfileSchema), UserController.u
 
 /**
  * @swagger
- * /api/users/{id}/toggle-status:
+ * /users/{id}/toggle-status:
  *   patch:
  *     summary: Toggle user active status (Admin only)
  *     tags: [Users]
@@ -438,7 +496,7 @@ router.patch('/:id/toggle-status', authenticate, authorize('admin'), async (req,
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /users/{id}:
  *   delete:
  *     summary: Delete user (Admin only)
  *     tags: [Users]

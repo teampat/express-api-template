@@ -10,14 +10,14 @@ class UserController {
   /**
    * Get current user profile
    */
-  static async getCurrentUser(req, res) {
+  static async getUserProfile(req, res) {
     try {
       res.json({
         success: true,
         data: req.user
       });
     } catch (error) {
-      logger.error('Get current user error:', error);
+      logger.error('Get user profile error:', error);
       res.status(500).json({
         success: false,
         message: 'Internal server error'

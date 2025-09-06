@@ -21,7 +21,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/auth/register:
+ * /auth/register:
  *   post:
  *     summary: Register a new user
  *     tags: [Authentication]
@@ -110,7 +110,7 @@ router.post('/register', validate(registerSchema), AuthController.register);
 
 /**
  * @swagger
- * /api/auth/login:
+ * /auth/login:
  *   post:
  *     summary: Login user
  *     tags: [Authentication]
@@ -191,61 +191,7 @@ router.post('/login', validate(loginSchema), AuthController.login);
 
 /**
  * @swagger
- * /api/auth/me:
- *   get:
- *     summary: Get current user profile
- *     tags: [Authentication]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: User profile retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 data:
- *                   $ref: '#/components/schemas/User'
- */
-router.get('/me', authenticate, AuthController.getCurrentUser);
-
-/**
- * @swagger
- * /api/auth/change-password:
- *   put:
- *     summary: Change user password
- *     tags: [Authentication]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - currentPassword
- *               - newPassword
- *             properties:
- *               currentPassword:
- *                 type: string
- *               newPassword:
- *                 type: string
- *                 minLength: 6
- *     responses:
- *       200:
- *         description: Password changed successfully
- *       400:
- *         description: Invalid current password
- */
-router.put('/change-password', authenticate, validate(changePasswordSchema), AuthController.changePassword);
-
-/**
- * @swagger
- * /api/auth/forgot-password:
+ * /auth/forgot-password:
  *   post:
  *     summary: Request password reset
  *     tags: [Authentication]
@@ -270,7 +216,7 @@ router.post('/forgot-password', validate(forgotPasswordSchema), AuthController.f
 
 /**
  * @swagger
- * /api/auth/reset-password:
+ * /auth/reset-password:
  *   post:
  *     summary: Reset password with token
  *     tags: [Authentication]
