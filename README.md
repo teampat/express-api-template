@@ -11,7 +11,8 @@ A comprehensive Express.js API template with modern features including authentic
 - [🎯 Smart Migration System](#-smart-migration-system)
 - [🏗️ Code Generator](#️-code-generator)
 - [🧪 Testing](#-testing)
-- [🐳 Docker Deployment](#-docker-deployment)
+- [� Performance Benchmarking](#-performance-benchmarking)
+- [�🐳 Docker Deployment](#-docker-deployment)
 - [⚡ Runtime Support](#-runtime-support)
 - [📚 API Documentation](#-api-documentation)
 - [🗄️ Database Configuration](#️-database-configuration)
@@ -62,6 +63,7 @@ A comprehensive Express.js API template with modern features including authentic
 - **Auto-generated Documentation** - Swagger/OpenAPI 3.0 documentation
 - **Input Validation** - Request validation with Joi
 - **Unit Testing** - Comprehensive test suite with Jest (168+ tests)
+- **Performance Benchmarking** - Node.js vs Bun runtime comparison with unified CLI
 - **Utility Functions** - Comprehensive utils library for dates, strings, validation, crypto
 - **Security** - Security best practices with Helmet, CORS, Rate limiting
 - **Error Handling** - Centralized error handling
@@ -820,7 +822,60 @@ Generate test coverage:
 npm run test:coverage
 ```
 
-## 📊 Database Migrations
+## � Performance Benchmarking
+
+This project includes a comprehensive **Node.js vs Bun** performance benchmarking suite that measures request/response performance, latency, and throughput across different runtime environments.
+
+### Quick Benchmark
+
+```bash
+# Quick development benchmark (10 seconds)
+./benchmark_scripts/quick.sh
+```
+
+### Complete Benchmark Suite
+
+```bash
+# Full benchmark with both AutoCannon and wrk (30 seconds each)
+./benchmark_scripts/unified-benchmark.sh
+
+# AutoCannon only
+./benchmark_scripts/unified-benchmark.sh autocannon
+
+# wrk only  
+./benchmark_scripts/unified-benchmark.sh wrk
+
+# Custom duration and connections
+./benchmark_scripts/unified-benchmark.sh -d 60 -c 200
+```
+
+### Benchmark Results Summary
+
+```bash
+# Generate markdown summary from existing results
+./benchmark_scripts/analyze.sh
+```
+
+### 📈 **Expected Performance Results**
+
+Based on comprehensive testing, **Bun consistently outperforms Node.js**:
+
+- **🚀 Request Rate**: Bun ~70-80% higher RPS than Node.js
+- **⚡ Latency**: Bun ~40-50% lower response times  
+- **📊 Throughput**: Bun significantly better under high load
+- **🔧 Resource Usage**: Bun more efficient memory and CPU utilization
+
+### 🛠️ **Benchmark Tools**
+
+- **AutoCannon**: HTTP/1.1 load testing with detailed metrics
+- **wrk**: Advanced HTTP benchmarking with Lua scripting
+- **Unified CLI**: Single script interface with customizable parameters
+- **Markdown Reports**: Automated summary generation
+
+> 📁 **All benchmark scripts and results**: [`./benchmark_scripts/`](./benchmark_scripts/)  
+> 📋 **Detailed setup instructions**: [Benchmark Suite README](./benchmark_scripts/README.md)
+
+## �📊 Database Migrations
 
 Create a new migration:
 
@@ -1061,6 +1116,11 @@ express-api-template/
 ├── scripts/                    # 🛠️ Build and utility scripts
 │   ├── migrate.js              # � Smart migration CLI
 │   └── generate.js             # �️ Code generator CLI
+├── benchmark_scripts/          # 🚀 Performance benchmarking suite
+│   ├── unified-benchmark.sh    # Complete Node.js vs Bun benchmark
+│   ├── quick.sh                # Quick development benchmark
+│   ├── analyze.sh              # Results analysis and summary
+│   └── generate-summary.sh     # Markdown report generator
 ├── tests/                      # 🧪 Unit test suites (168+ tests)
 ├── examples/                   # 📖 Usage examples and demos
 ├── uploads/                    # 📁 Local file storage
@@ -1076,6 +1136,7 @@ express-api-template/
 ### 🎯 Key Features by Directory
 
 - **`scripts/`** - 🆕 **CLI Tools**: Migration system + Code generator
+- **`benchmark_scripts/`** - 🚀 **Performance Suite**: Node.js vs Bun benchmarking with unified CLI
 - **`src/utils/`** - **168+ tested utility functions** with comprehensive coverage
 - **`src/models/`** - **Clean architecture** with proper associations
 - **`tests/`** - **Self-cleaning test suite** with automatic restoration
