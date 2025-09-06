@@ -107,13 +107,13 @@ async function startServer() {
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
-  logger.info('SIGTERM received, shutting down gracefully');
+  console.info('SIGTERM received, shutting down gracefully');
   await sequelize.close();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
-  logger.info('SIGINT received, shutting down gracefully');
+  console.info('SIGINT received, shutting down gracefully');
   await sequelize.close();
   process.exit(0);
 });
