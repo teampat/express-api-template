@@ -2,9 +2,38 @@
 
 A comprehensive Express.js API template with modern features including authentication, file upload, database migrations, testing, and auto-generated API documentation.
 
+## 📚 Table of Contents
+
+- [🚀 Features](#-features)
+- [📋 Prerequisites](#-prerequisites)
+- [🛠️ Installation](#️-installation)
+- [🚀 Quick Start](#-quick-start)
+- [🎯 Smart Migration System](#-smart-migration-system)
+- [🏗️ Code Generator](#️-code-generator)
+- [🧪 Testing](#-testing)
+- [🐳 Docker Deployment](#-docker-deployment)
+- [⚡ Runtime Support](#-runtime-support)
+- [📚 API Documentation](#-api-documentation)
+- [🗄️ Database Configuration](#️-database-configuration)
+- [🔐 Authentication](#-authentication)
+- [👥 User Management](#-user-management)
+- [📁 File Upload & Storage](#-file-upload--storage)
+- [📊 Database Migrations](#-database-migrations)
+- [📧 Email Service](#-email-service)
+- [🛠️ Utility Functions](#️-utility-functions)
+- [🔒 Security Features](#-security-features)
+- [📝 Logging](#-logging)
+- [🌍 Environment Variables](#-environment-variables)
+- [📁 Project Structure](#-project-structure)
+- [🎯 Key Highlights](#-key-highlights)
+- [🚀 Production Deployment](#-production-deployment)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [🆘 Support](#-support)
+
 ## 🚀 Features
 
-### **🎯 NEW: Automated Migration Generator**
+### **🎯 NEW: Smart Migration System**
 - **🚀 Auto-generate migrations** from existing models - no manual work needed!
 - **📝 CLI migration tools** for creating tables, columns, indexes with simple commands
 - **🔍 Smart analyzer** automatically detects missing migrations
@@ -12,6 +41,15 @@ A comprehensive Express.js API template with modern features including authentic
 - **📊 Index support** - create indexes from model definitions
 - **✅ Complete rollback support** - all migrations include proper down() methods
 - **🎨 Supports all Sequelize data types** (ENUM, DECIMAL, JSON, etc.)
+- **🧪 Self-cleaning test suite** with automatic database restoration
+
+### **🏗️ NEW: Code Generator**
+- **⚡ Full Scaffold Generation** - Create complete CRUD in seconds
+- **📦 Individual Components** - Generate model, controller, service, route, validator separately
+- **🎨 Smart Templates** - Production-ready code with best practices
+- **📖 Auto Swagger Docs** - Complete API documentation generated automatically
+- **🔍 Advanced Search & Filtering** - Built-in pagination, search, and status management
+- **🛡️ Security Built-in** - Authentication, validation, and error handling included
 
 ### Core Features
 - **Express.js v5** - Latest version with native async/await support
@@ -21,94 +59,12 @@ A comprehensive Express.js API template with modern features including authentic
 - **File Upload Support** - Dual storage system (local + S3-compatible)
 - **Image Processing** - Automatic resize, format conversion (JPG, WebP, AVIF, PNG)
 - **Redis Integration** - Optional Redis support for caching and session management
-- **Database Migrations** - Full migration and seeding support with automation
 - **Auto-generated Documentation** - Swagger/OpenAPI 3.0 documentation
 - **Input Validation** - Request validation with Joi
 - **Unit Testing** - Comprehensive test suite with Jest (168+ tests)
 - **Utility Functions** - Comprehensive utils library for dates, strings, validation, crypto
 - **Security** - Security best practices with Helmet, CORS, Rate limiting
 - **Error Handling** - Centralized error handling
-- **Environment Configuration** - Multiple environment support
-- **Logging** - Request logging with Morgan and Winston
-- **Email Service** - SMTP email support with templates
-- **Compression** - Response compression for better performance
-
-## 📋 Prerequisites
-
-- Node.js (>= 22.0.0) or Bun (>= 1.0.0)
-- npm, yarn, pnpm, or bun
-
-### Installing Package Managers
-
-**pnpm with Corepack (Recommended - Node.js 16.13+):**
-```bash
-corepack enable
-corepack prepare pnpm@latest --activate
-```
-
-**Bun (All-in-one toolkit):**
-```bash
-curl -fsSL https://bun.sh/install | bash
-```Import specific utilities:
-```javascript
-const { formatDate, isValidEmail, successResponse } = require('./src/utils');
-```
-
-### 🔍 Utility Examples
-
-Run the comprehensive examples to see all utilities in action:
-
-**Using npm:**
-```bash
-npm run examples
-```
-
-**Using yarn:**
-```bash
-yarn examples
-```
-
-**Using pnpm:**
-```bash
-pnpm examples
-```
-
-**Using bun:**
-```bash
-bun run examples
-```
-
-This will demonstrate:
-- **Enhanced date formatting and calculations** with dayjs
-- **Advanced date comparisons and ranges** 
-- **Timezone support and business day calculations**
-- **String transformations and validation**
-- **Data validation and sanitization** 
-- **Cryptographic operations**
-- **Standardized API responses**
-- **File operations and validation**
-
-## 🔒 Security Features
-
-- **Helmet** - Sets various HTTP headers
-- **CORS** - Cross-Origin Resource Sharing
-- **Rate Limiting** - Prevents abuse
-- **Input Validation** - Joi validation schemas
-- **JWT Authentication** - Secure token-based auth
-- **Password Hashing** - bcrypt with salt rounds
-- **SQL Injection Protection** - Sequelize ORM
-- **Date/Time Operations** - Enhanced date utilities powered by dayjs
-- **File Storage** - Dual storage system: local storage and S3-compatible object storage (AWS S3, MinIO, DigitalOcean Spaces) with advanced image processing
-- **Image Processing** - Automatic resize, format conversion (JPG, WebP, AVIF, PNG), quality optimization with environment-based configuration
-- **Redis Integration** - Optional Redis support for caching, session management, rate limiting, and background job processing
-- **Database Migrations** - Full migration and seeding support
-- **Auto-generated Documentation** - Swagger/OpenAPI 3.0 documentation
-- **Input Validation** - Request validation with Joi
-- **Unit Testing** - Comprehensive test suite with Jest
-- **Utility Functions** - Comprehensive utils library for dates, strings, validation, crypto, responses, and files
-- **Security** - Security best practices with Helmet, CORS, Rate limiting
-- **Error Handling** - Centralized error handling
-- **Code Organization** - Clean architecture with separation of concerns
 - **Environment Configuration** - Multiple environment support
 - **Logging** - Request logging with Morgan and Winston
 - **Email Service** - SMTP email support with templates
@@ -281,6 +237,123 @@ npm run migrate:down
 # 📋 ดูสถานะ migrations ที่รันแล้ว
 npm run migrate:status
 ```
+
+## 🏗️ Code Generator
+
+เครื่องมือสร้างโค้ดอัตโนมัติสำหรับ Express API แบบ Full-Stack
+
+### 🚀 Quick Commands
+
+```bash
+# 🎯 สร้าง Scaffold ครบชุด (แนะนำ)
+npm run g scaffold product
+
+# 📦 สร้างไฟล์เดี่ยว
+npm run g model product
+npm run g controller product  
+npm run g service product
+npm run g route product
+npm run g validator product
+```
+
+### 📋 Scaffold Generation
+
+สร้างไฟล์ครบชุดในคำสั่งเดียว:
+
+```bash
+# สร้าง Product ครบชุด
+npm run g scaffold product
+
+# สร้าง Category ครบชุด  
+npm run g scaffold category
+
+# สร้าง Order ครบชุด
+npm run g scaffold order
+```
+
+**Scaffold จะสร้างให้:**
+- ✅ **Model** - Sequelize model พร้อม associations
+- ✅ **Service** - Business logic layer  
+- ✅ **Controller** - Request handlers ครบ CRUD
+- ✅ **Validator** - Input validation rules
+- ✅ **Route** - Express routes พร้อม Swagger docs
+
+### 🎨 Individual Generators
+
+สร้างไฟล์เดี่ยวตามต้องการ:
+
+```bash
+# สร้าง Model
+npm run g model product
+
+# สร้าง Controller
+npm run g controller product
+
+# สร้าง Service  
+npm run g service product
+
+# สร้าง Route
+npm run g route product
+
+# สร้าง Validator
+npm run g validator product
+```
+
+### ✨ Generated Features
+
+**Model ที่สร้างจะมี:**
+- 🔑 Primary key auto-increment
+- 📅 Timestamps (createdAt, updatedAt)
+- 🗑️ Soft delete (paranoid)
+- 🔍 Indexes สำหรับ performance
+- 🔗 Association placeholders
+- ✅ Validation rules
+
+**Controller ที่สร้างจะมี:**
+- 📋 `getAll()` - List with pagination & search
+- 👁️ `getById()` - Get single item
+- ➕ `create()` - Create new item
+- ✏️ `update()` - Update existing item
+- 🗑️ `delete()` - Soft delete item
+- 🔄 `toggleStatus()` - Toggle active status
+
+**Service ที่สร้างจะมี:**
+- 🔍 Advanced search & filtering
+- 📄 Pagination support
+- 🔄 Status management
+- 🛡️ Error handling
+- 📊 Business logic methods
+
+**Route ที่สร้างจะมี:**
+- 🛣️ RESTful endpoints
+- 🔐 Authentication middleware
+- ✅ Validation middleware
+- 📖 Complete Swagger documentation
+- 🔒 Proper security headers
+
+### 💡 Usage Workflow
+
+1. **สร้าง Scaffold:**
+   ```bash
+   npm run g scaffold product
+   ```
+
+2. **เพิ่ม Route ใน server.js:**
+   ```javascript
+   app.use('/api/products', require('./routes/products'));
+   ```
+
+3. **สร้าง Migration:**
+   ```bash
+   npm run migrate analyze
+   ```
+
+4. **รัน Migration:**
+   ```bash
+   npm run migrate:up
+   ```
+
+5. **ทดสอบ API!** 🚀
 
 ### �️ CLI Migration Generator
 
@@ -972,102 +1045,57 @@ S3_FORCE_PATH_STYLE=false           # Use path-style URLs
 
 ```
 express-api-template/
-├── src/                        # Source code
-│   ├── config/                 # Configuration files
-│   │   ├── database.js         # Database configuration
-│   │   ├── logger.js           # Winston logger configuration
-│   │   └── swagger.js          # Swagger API documentation setup
-│   ├── controllers/            # Request handlers
-│   │   ├── authController.js   # Authentication endpoints
-│   │   ├── uploadController.js # File upload endpoints
-│   │   └── userController.js   # User management endpoints
-│   ├── middleware/             # Express middleware
-│   │   ├── auth.js             # JWT authentication middleware
-│   │   ├── errorHandler.js     # Global error handling
-│   │   ├── rateLimiter.js      # Rate limiting middleware
-│   │   └── validate.js         # Input validation middleware
-│   ├── models/                 # Sequelize database models
-│   │   ├── index.js            # Model registry and associations
-│   │   ├── User.js             # User model with authentication
-│   │   ├── Product.js          # Product model example
-│   │   ├── Category.js         # Category model example
-│   │   ├── Order.js            # Order model example
-│   │   └── OrderItem.js        # Order item model example
-│   ├── routes/                 # Express route definitions
-│   │   ├── auth.js             # Authentication routes
-│   │   ├── upload.js           # File upload routes
-│   │   └── users.js            # User management routes
-│   ├── services/               # Business logic layer
-│   │   ├── authService.js      # Authentication business logic
-│   │   ├── emailService.js     # Email sending service
-│   │   ├── fileService.js      # File handling service
-│   │   ├── s3Service.js        # S3-compatible storage service
-│   │   └── userService.js      # User management service
-│   ├── utils/                  # Utility functions
-│   │   ├── dateUtils.js        # Date operations with dayjs
-│   │   ├── stringUtils.js      # String transformations
-│   │   ├── validationUtils.js  # Data validation helpers
-│   │   ├── cryptoUtils.js      # Cryptographic functions
-│   │   ├── responseUtils.js    # API response helpers
-│   │   ├── fileUtils.js        # File operations
-│   │   ├── migrationGenerator.js # Migration generation utility
-│   │   └── index.js            # Utils entry point
-│   ├── validators/             # Input validation schemas
-│   │   └── authValidator.js    # Authentication validation
-│   ├── migrations/             # Database migrations
-│   │   └── 20240101000001-create-user.js # User table migration
-│   ├── seeders/                # Database seeders
-│   │   └── 20240101000001-demo-users.js # Demo user data
-│   ├── templates/              # Email templates
-│   │   ├── welcome.hbs         # Welcome email template
-│   │   └── reset-password.hbs  # Password reset template
-│   └── server.js               # Application entry point
-├── scripts/                    # Build and utility scripts
-│   ├── migrate.js              # 🆕 Unified migration CLI
-│   ├── migrate-gen.js          # Legacy manual migration CLI
-│   └── smart-migrate.js        # Legacy smart migration analyzer
-├── tests/                      # Unit test suites (168+ tests)
-│   ├── authMiddleware.test.js  # Authentication middleware tests
-│   ├── authService.test.js     # Authentication service tests
-│   ├── authValidator.test.js   # Authentication validation tests
-│   ├── errorHandler.test.js    # Error handling tests
-│   ├── fileService.test.js     # File service tests
-│   ├── userService.test.js     # User service tests
-│   └── utils.test.js           # Utility functions tests
-├── examples/                   # Usage examples and demos
-│   └── utils-examples.js       # Comprehensive utils demonstration
-├── uploads/                    # Local file storage (created automatically)
-├── logs/                       # Application logs (created automatically)
-├── coverage/                   # Test coverage reports (generated)
-├── .env.example                # Environment variables template
-├── package.json                # Dependencies and scripts
-├── Dockerfile                  # Default Docker configuration (Node.js)
-├── Dockerfile.nodejs           # Node.js optimized Docker configuration
-├── Dockerfile.bun              # Bun optimized Docker configuration
-├── docker-compose.nodejs.yml   # Production deployment with Node.js
-├── docker-compose.bun.yml      # Production deployment with Bun
-├── docker-compose.dev.yml      # Development environment
-└── README.md                   # 📖 This comprehensive documentation
+├── src/                        # 🎯 Source code
+│   ├── config/                 # Configuration files (database, logger, swagger)
+│   ├── controllers/            # 🎮 Request handlers (auth, upload, user)
+│   ├── middleware/             # 🛡️ Express middleware (auth, validation, rate limiting)
+│   ├── models/                 # 🗄️ Sequelize database models
+│   ├── routes/                 # 🛣️ Express route definitions
+│   ├── services/               # ⚙️ Business logic layer
+│   ├── utils/                  # 🔧 Utility functions (168+ tested functions)
+│   ├── validators/             # ✅ Input validation schemas
+│   ├── migrations/             # 📊 Database migrations
+│   ├── seeders/                # 🌱 Database seeders
+│   ├── templates/              # 📧 Email templates
+│   └── server.js               # 🚀 Application entry point
+├── scripts/                    # 🛠️ Build and utility scripts
+│   ├── migrate.js              # � Smart migration CLI
+│   └── generate.js             # �️ Code generator CLI
+├── tests/                      # 🧪 Unit test suites (168+ tests)
+├── examples/                   # 📖 Usage examples and demos
+├── uploads/                    # 📁 Local file storage
+├── logs/                       # 📝 Application logs
+├── coverage/                   # 📊 Test coverage reports
+├── docker-compose.*.yml        # 🐳 Docker deployment configs
+├── Dockerfile.*                # 🐳 Docker build configurations
+├── .env.example                # ⚙️ Environment variables template
+├── package.json                # 📦 Dependencies and scripts
+└── README.md                   # 📖 This documentation
 ```
 
-### Key Features by Directory
+### 🎯 Key Features by Directory
 
-- **`src/utils/migrationGenerator.js`** - 🆕 **Core migration generation engine**
-- **`scripts/migrate.js`** - 🆕 **Unified CLI for all migration operations**
-- **`src/utils/`** - **Comprehensive utility library** with dayjs integration (168+ tests)
-- **`src/models/`** - **Example models** with relations and foreign keys
-- **`tests/`** - **Comprehensive test suite** with Jest
-- **`examples/`** - **Usage examples** and demonstrations
-- **Docker files** - **Multiple deployment configurations** (Node.js, Bun)
-- **Environment files** - **Production-ready** configuration templates
+- **`scripts/`** - 🆕 **CLI Tools**: Migration system + Code generator
+- **`src/utils/`** - **168+ tested utility functions** with comprehensive coverage
+- **`src/models/`** - **Clean architecture** with proper associations
+- **`tests/`** - **Self-cleaning test suite** with automatic restoration
+- **Docker files** - **Multi-runtime deployment** (Node.js + Bun support)
+- **Environment setup** - **Production-ready** configuration templates
 
 ## 🎯 Key Highlights
 
 ### 🚀 **Development Speed**
 - **Zero Database Setup**: SQLite works out of the box
+- **Code Generator**: Full CRUD scaffold in seconds
 - **Automated Migrations**: Generate migrations from models automatically
 - **Hot Reload**: Development server with automatic restart
 - **Comprehensive Utils**: 168+ tested utility functions
+
+### 🏗️ **Code Generation**
+- **Full Scaffold**: Model + Controller + Service + Route + Validator in one command
+- **Smart Templates**: Production-ready code with best practices
+- **Auto Documentation**: Swagger docs generated automatically
+- **Security Built-in**: Authentication and validation included
 
 ### 🛡️ **Production Ready**
 - **Security Best Practices**: Helmet, CORS, Rate limiting, Input validation
@@ -1083,7 +1111,8 @@ express-api-template/
 - **Image Processing**: Automatic optimization and format conversion
 
 ### 🧪 **Quality Assurance**
-- **Test Coverage**: 168+ comprehensive tests
+- **Test Coverage**: 168+ comprehensive tests including migration tests
+- **Self-Cleaning Tests**: Automatic cleanup and database restoration
 - **Code Quality**: ESLint configuration and best practices
 - **API Documentation**: Auto-generated Swagger docs
 - **Type Safety**: JSDoc annotations
@@ -1123,4 +1152,11 @@ For support and questions:
 
 **Happy coding! 🎉**
 
-This template provides everything you need to build a modern, scalable Express.js API with automated database migrations, comprehensive testing, and production-ready features.
+This template provides everything you need to build a modern, scalable Express.js API with:
+- 🏗️ **Full-stack code generation** for rapid development
+- 🎯 **Smart migration system** with auto-generation
+- 🧪 **Self-cleaning test suite** with comprehensive coverage  
+- 🛡️ **Production-ready security** and deployment configurations
+- 📚 **Complete documentation** and examples
+
+Start building your next API in minutes, not hours! 🚀
